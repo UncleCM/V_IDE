@@ -1,4 +1,4 @@
-import {Box, Button, Menu, MenuButton, MenuItem, MenuList, Text,} from "@chakra-ui/react";
+import { Box, Button, Menu, MenuButton, MenuList, MenuItem, Text } from "@chakra-ui/react";
 import { LANGUAGE_VERSIONS } from "../constants";
 
 const languages = Object.entries(LANGUAGE_VERSIONS);
