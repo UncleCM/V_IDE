@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.errorLineDecoration {
+  background: rgba(255, 0, 0, 0.2);
+  width: 5px !important;
+  margin-left: 3px;
+}
+
+.errorGlyphMargin {
+  background: red;
+  border-radius: 50%;
+  width: 8px !important;
+  height: 8px !important;
+  margin-left: 5px;
+  margin-top: 10px;
+}
