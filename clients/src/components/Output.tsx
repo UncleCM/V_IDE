@@ -1,26 +1,41 @@
 import { useState } from "react";
 import { Box, Button, Text, useToast } from "@chakra-ui/react";
+import { editor } from 'monaco-editor';
 import { executeCode } from "../api";
 
-const Output = ({ editorRef, language }) => {
+interface OutputProps {
+  editorRef: React.RefObject<editor.IStandaloneCodeEditor>;
+  language: string;
+}
+
+interface ExecuteCodeResponse {
+  run: {
+    output: string;
+    stderr: string;
+  };
+}
+
+const Output: React.FC<OutputProps> = ({ editorRef, language }) => {
   const toast = useToast();
-  const [output, setOutput] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [output, setOutput] = useState<string[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
 
   const runCode = async () => {
+    if (!editorRef.current) return;
     const sourceCode = editorRef.current.getValue();
     if (!sourceCode) return;
+    
     try {
       setIsLoading(true);
-      const { run: result } = await executeCode(language, sourceCode);
+      const { run: result } = await executeCode(language, sourceCode) as ExecuteCodeResponse;
       setOutput(result.output.split("\n"));
       result.stderr ? setIsError(true) : setIsError(false);
     } catch (error) {
       console.log(error);
       toast({
         title: "An error occurred.",
-        description: error.message || "Unable to run code",
+        description: error instanceof Error ? error.message : "Unable to run code",
         status: "error",
         duration: 6000,
       });
@@ -58,4 +73,5 @@ const Output = ({ editorRef, language }) => {
     </Box>
   );
 };
+
 export default Output;

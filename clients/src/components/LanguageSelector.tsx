@@ -1,10 +1,15 @@
 import { Box, Button, Menu, MenuButton, MenuList, MenuItem, Text } from "@chakra-ui/react";
-import { LANGUAGE_VERSIONS } from "../constants";
+import { LANGUAGE_VERSIONS } from "../constants.ts";
+
+interface LanguageSelectorProps {
+  language: string;
+  onSelect: (language: string) => void;
+}
 
 const languages = Object.entries(LANGUAGE_VERSIONS);
 const ACTIVE_COLOR = "blue.400";
 
-const LanguageSelector = ({ language, onSelect }) => {
+const LanguageSelector: React.FC<LanguageSelectorProps> = ({ language, onSelect }) => {
   return (
     <Box ml={2} mb={4}>
       <Text mb={2} fontSize="lg">
@@ -36,4 +41,5 @@ const LanguageSelector = ({ language, onSelect }) => {
     </Box>
   );
 };
+
 export default LanguageSelector;
