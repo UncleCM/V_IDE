@@ -28,7 +28,8 @@ const QuestionEditor = ({ question }: QuestionEditorProps) => {
       </Box>
       <Output 
         editorRef={editorRef} 
-        language="python" 
+        language="python"
+        questionId={question.id}
         onError={setErrorLine}
       />
     </Box>

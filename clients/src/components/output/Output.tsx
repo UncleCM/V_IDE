@@ -1,18 +1,22 @@
 import { useState } from "react";
-import { Box, Button, Text, useToast } from "@chakra-ui/react";
+import { Box, Button, Text, useToast, HStack } from "@chakra-ui/react";
 import { editor } from 'monaco-editor';
 import { executeCode } from "../../api";
+import { submitCode } from "../../api/codeApi";
+import { LoadCodeButton } from "../code-history/LoadCodeButton";
 
 interface OutputProps {
   editorRef: React.RefObject<editor.IStandaloneCodeEditor>;
   language: string;
+  questionId: number;
   onError?: (line?: number) => void;
 }
 
-const Output = ({ editorRef, language, onError }: OutputProps) => {
+const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
   const toast = useToast();
   const [output, setOutput] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
 
   const getErrorLine = (error: string): number | undefined => {
@@ -52,17 +56,69 @@ const Output = ({ editorRef, language, onError }: OutputProps) => {
     }
   };
 
+  const handleSubmit = async () => {
+    if (!editorRef.current) return;
+    const sourceCode = editorRef.current.getValue();
+    if (!sourceCode) return;
+
+    try {
+      setIsSubmitting(true);
+      await submitCode({
+        code: sourceCode,
+        language,
+        question_id: questionId,
+        output: output?.join('\n') || null,
+        error: isError ? output?.join('\n') : null,
+      });
+      
+      toast({
+        title: "Code submitted successfully",
+        status: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Failed to submit code",
+        description: "Please try again later",
+        status: "error",
+        duration: 6000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleLoadCode = (code: string) => {
+    if (editorRef.current) {
+      editorRef.current.setValue(code);
+    }
+  };
+
   return (
     <Box>
-      <Button
-        variant="outline"
-        colorScheme="green"
-        mb={4}
-        isLoading={isLoading}
-        onClick={runCode}
-      >
-        Run Code
-      </Button>
+      <HStack spacing={4} mb={4}>
+        <Button
+          variant="outline"
+          colorScheme="green"
+          isLoading={isLoading}
+          onClick={runCode}
+        >
+          Run Code
+        </Button>
+        <Button
+          variant="solid"
+          colorScheme="blue"
+          isLoading={isSubmitting}
+          onClick={handleSubmit}
+        >
+          Submit Solution
+        </Button>
+        <LoadCodeButton 
+          questionId={questionId}
+          onLoadCode={handleLoadCode}
+        />
+      </HStack>
       <Box
         p={4}
         bg="#110c1b"
@@ -71,7 +127,7 @@ const Output = ({ editorRef, language, onError }: OutputProps) => {
         color={isError ? "red.400" : "white"}
       >
         {output
-          ? output.map((line, i) => <Text key={i}>{line}</Text>)
+          ? output.map((line, i) => <Text key={i} color={isError ? "red.400" : "white"}>{line}</Text>)
           : <Text color="gray.400">Click "Run Code" to see the output here</Text>}
       </Box>
     </Box>
