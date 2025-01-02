@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.1.1 (Python 3.13.0 on darwin)" generated="2025-01-03T00:48:57.784753" rpa="false" schemaversion="5">
+<suite id="s1" name="Test" source="/Users/tanakrit/Documents/GitHub/V_IDE/test/test.robot">
+<test id="s1-t1" name="Compare Teacher And Student Answers From Database" line="16">
+<kw name="Connect To Database" owner="DatabaseLibrary">
+<msg time="2025-01-03T00:48:57.879154" level="INFO">Looking for configuration file: 'resources/db.cfg'</msg>
+<msg time="2025-01-03T00:48:57.879178" level="INFO">Configuration file doesn't exist</msg>
+<msg time="2025-01-03T00:48:57.896418" level="INFO">Connect to DB using : psycopg2.connect(database='localhost:5432/school_db', user='postgres', password=***, port=5432)</msg>
+<msg time="2025-01-03T00:48:57.900651" level="FAIL">OperationalError: connection to server on socket "/tmp/.s.PGSQL.5432" failed: FATAL:  role "postgres" does not exist
+</msg>
+<arg>${DB_TYPE}</arg>
+<arg>${DB_HOST}:${DB_PORT}/${DB_NAME}</arg>
+<arg>${DB_USER}</arg>
+<arg>${DB_PASSWORD}</arg>
+<doc>Creates a database connection using the DB API 2.0 ``db_module`` and the parameters provided.
+Along with listed commonly used arguments (`db_name`, `db_host` etc.)
+you can set any other DB module specific parameters as key/value pairs.</doc>
+<status status="FAIL" start="2025-01-03T00:48:57.879009" elapsed="0.022831">OperationalError: connection to server on socket "/tmp/.s.PGSQL.5432" failed: FATAL:  role "postgres" does not exist
+</status>
+</kw>
+<kw name="Query" owner="DatabaseLibrary">
+<var>${teacher_answer}</var>
+<arg>${QUERY_TEACHER}</arg>
+<doc>Runs a query with the ``select_statement`` and returns the result as list of rows.
+The type of row values depends on the database module -
+usually they are tuples or tuple-like objects.</doc>
+<status status="NOT RUN" start="2025-01-03T00:48:57.901992" elapsed="0.000020"/>
+</kw>
+<kw name="Query" owner="DatabaseLibrary">
+<var>${student_output}</var>
+<arg>${QUERY_STUDENT}</arg>
+<doc>Runs a query with the ``select_statement`` and returns the result as list of rows.
+The type of row values depends on the database module -
+usually they are tuples or tuple-like objects.</doc>
+<status status="NOT RUN" start="2025-01-03T00:48:57.902079" elapsed="0.000010"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<var>${teacher_text}</var>
+<arg>${teacher_answer}[0][0]</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="NOT RUN" start="2025-01-03T00:48:57.902145" elapsed="0.000010"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<var>${student_text}</var>
+<arg>${student_output}[0][0]</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="NOT RUN" start="2025-01-03T00:48:57.902199" elapsed="0.000008"/>
+</kw>
+<kw name="Log To Console" owner="BuiltIn">
+<arg>Teacher's Answer: ${teacher_text}</arg>
+<doc>Logs the given message to the console.</doc>
+<status status="NOT RUN" start="2025-01-03T00:48:57.902255" elapsed="0.000009"/>
+</kw>
+<kw name="Log To Console" owner="BuiltIn">
+<arg>Student's Output: ${student_text}</arg>
+<doc>Logs the given message to the console.</doc>
+<status status="NOT RUN" start="2025-01-03T00:48:57.902304" elapsed="0.000008"/>
+</kw>
+<kw name="Should Be Equal" owner="BuiltIn">
+<arg>${teacher_text}</arg>
+<arg>${student_text}</arg>
+<doc>Fails if the given objects are unequal.</doc>
+<status status="NOT RUN" start="2025-01-03T00:48:57.902350" elapsed="0.000008"/>
+</kw>
+<kw name="Disconnect From Database" owner="DatabaseLibrary">
+<doc>Disconnects from the database.</doc>
+<status status="NOT RUN" start="2025-01-03T00:48:57.902395" elapsed="0.000009"/>
+</kw>
+<doc>Compare teacher's answer and student's output fetched from the database.</doc>
+<status status="FAIL" start="2025-01-03T00:48:57.878523" elapsed="0.023980">OperationalError: connection to server on socket "/tmp/.s.PGSQL.5432" failed: FATAL:  role "postgres" does not exist
+</status>
+</test>
+<status status="FAIL" start="2025-01-03T00:48:57.785273" elapsed="0.117409"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat pass="0" fail="1" skip="0" id="s1" name="Test">Test</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
