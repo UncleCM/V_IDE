@@ -7,10 +7,10 @@ const Header = () => {
         Computers and Programming, SE Programme
       </Text>
       <Text fontSize="xl" color="gray.300" mt={2}>
-        Homework #10
+        Homework # xx
       </Text>
       <Text fontSize="md" color="gray.400" mt={1}>
-        26th September 2023
+        xx - xxx - xx
       </Text>
     </Box>
   );
