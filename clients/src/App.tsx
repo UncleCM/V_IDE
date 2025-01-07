@@ -1,16 +1,21 @@
 import React from 'react';
-import { Box, Container } from "@chakra-ui/react";
-import Header from "./components/Header";
-import CodeEditor from "./components/CodeEditor";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import CodingPage from './Pages/CodingPage';
+import QuestionCreatorPage from './Pages/QuestionCreator';
+import DashboardPage from './Pages/DashboardPage';
+import TeacherDashboardPage from './Pages/TeacherDashboardPage';
 
 const App: React.FC = () => {
   return (
-    <Box minH="100vh" bg="#0f0a19" py={8}>
-      <Container maxW="container.xl">
-        <Header />
-        <CodeEditor />
-      </Container>
-    </Box>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/teacher" element={<TeacherDashboardPage />} />
+        <Route path="/student" element={<DashboardPage />} />
+        <Route path="/CodeEditor" element={<CodingPage />} />
+        <Route path="/QuestionCreator" element={<QuestionCreatorPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 
