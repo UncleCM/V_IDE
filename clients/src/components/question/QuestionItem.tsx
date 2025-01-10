@@ -1,4 +1,5 @@
-import { Box, Text } from "@chakra-ui/react";
+import { Box, HStack, Text } from "@chakra-ui/react";
+import { ChevronRight } from "lucide-react";
 import { Question } from "../../types/questions";
 
 interface QuestionItemProps {
@@ -10,17 +11,27 @@ interface QuestionItemProps {
 const QuestionItem = ({ question, isSelected, onClick }: QuestionItemProps) => {
   return (
     <Box
-      p={4}
+      p={3}
       bg={isSelected ? "brand.bg.active" : "brand.bg.secondary"}
       borderRadius="md"
       cursor="pointer"
       onClick={onClick}
       _hover={{ bg: "brand.bg.hover" }}
+      borderLeft={isSelected ? "4px solid" : "4px solid transparent"}
+      borderLeftColor={isSelected ? "brand.accent.primary" : "transparent"}
     >
-      <Text fontWeight="bold" mb={2} color="brand.text.primary">
-        {question.id}. {question.title}
-      </Text>
-      <Text color="brand.text.secondary">{question.description}</Text>
+      <HStack justify="space-between">
+        <Text 
+          fontWeight={isSelected ? "semibold" : "medium"} 
+          color={isSelected ? "brand.text.primary" : "brand.text.secondary"}
+        >
+          {question.id}. {question.title}
+        </Text>
+        <ChevronRight 
+          size={16} 
+          color={isSelected ? "var(--chakra-colors-brand-accent-primary)" : "var(--chakra-colors-brand-text-disabled)"}
+        />
+      </HStack>
     </Box>
   );
 };

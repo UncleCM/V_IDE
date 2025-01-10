@@ -1,35 +1,29 @@
-import { VStack, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { VStack } from "@chakra-ui/react";
 import { questions } from "../../data/questions";
-import { QuestionListProps } from "../../types/questions";
+import { Question, QuestionListProps } from "../../types/questions";
 import QuestionItem from "./QuestionItem";
+import { useState } from "react";
 
 const QuestionList = ({ onSelectQuestion }: QuestionListProps) => {
   const [selectedId, setSelectedId] = useState<number>(1);
 
-  const handleQuestionSelect = (questionId: number) => {
-    const question = questions.find(q => q.id === questionId);
-    if (question) {
-      setSelectedId(questionId);
-      onSelectQuestion(question.defaultCode);
-    }
+  const handleQuestionSelect = (question: Question) => {
+    setSelectedId(question.id);
+    onSelectQuestion(question);
   };
 
   return (
-    <VStack spacing={4} align="stretch" mb={6}>
-      <Text fontSize="2xl" fontWeight="bold" color="brand.text.primary">
-        Lab Questions
-      </Text>
+    <VStack spacing={2} align="stretch">
       {questions.map((question) => (
         <QuestionItem
           key={question.id}
           question={question}
           isSelected={selectedId === question.id}
-          onClick={() => handleQuestionSelect(question.id)}
+          onClick={() => handleQuestionSelect(question)}
         />
       ))}
     </VStack>
   );
 };
 
-export default QuestionList;  
+export default QuestionList;

@@ -7,5 +7,5 @@ export interface Question {
 }
 
 export interface QuestionListProps {
-  onSelectQuestion: (code: string) => void;
+  onSelectQuestion: (question: Question) => void;
 }

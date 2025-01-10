@@ -1,13 +1,17 @@
-import { useRef, useState } from "react";
-import { Box, HStack, VStack } from "@chakra-ui/react";
+import { VStack, Box } from "@chakra-ui/react";
+import { useState, useRef } from "react";
 import type { editor } from 'monaco-editor';
-import QuestionList from "../question/QuestionList";
 import EditorPane from "./EditorPane";
 import Output from "../output/Output";
 
-const CodeEditor = () => {
+interface CodeEditorProps {
+  initialCode?: string;
+  questionId: number;
+}
+
+const CodeEditor = ({ initialCode = "", questionId }: CodeEditorProps) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>(initialCode);
   const [errorLine, setErrorLine] = useState<number | undefined>();
 
   const onMount = (editor: editor.IStandaloneCodeEditor) => {
@@ -20,25 +24,27 @@ const CodeEditor = () => {
   };
 
   return (
-    <HStack spacing={8} align="flex-start">
-      <Box w="300px">
-        <QuestionList onSelectQuestion={setValue} />
-      </Box>
-      <VStack flex={1} spacing={4} align="stretch">
+    <VStack height="100%" spacing={4}>
+      {/* Editor */}
+      <Box height="300px" width="100%" bg="brand.bg.primary" borderRadius="md" overflow="hidden">
         <EditorPane
           value={value}
           onChange={setValue}
           onMount={onMount}
           errorLine={errorLine}
         />
+      </Box>
+
+      {/* Output */}
+      <Box width="100%">
         <Output 
-          editorRef={editorRef} 
+          editorRef={editorRef}
           language="python"
-          questionId={1}
+          questionId={questionId}
           onError={handleError}
         />
-      </VStack>
-    </HStack>
+      </Box>
+    </VStack>
   );
 };
 
