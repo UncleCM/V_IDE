@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Box, Button, Text, useToast, HStack, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Input, FormControl, FormLabel, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Text, useToast, HStack, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { editor } from 'monaco-editor';
 import { executeCode } from "../../api";
-import { saveCode, saveCodeAs } from "../../api/codeApi";
+import { saveCode, saveCodeAs, setExecutionScore } from "../../api/codeApi";
 import { LoadCodeButton } from "../code-history/LoadCodeButton";
-import { Save, SaveAll } from "lucide-react";
+import { Save, SaveAll, Star } from "lucide-react";
 
 interface OutputProps {
   editorRef: React.RefObject<editor.IStandaloneCodeEditor>;
@@ -15,12 +15,12 @@ interface OutputProps {
 
 const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [output, setOutput] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  const [fileName, setFileName] = useState<string>("");
+  const [currentExecutionId, setCurrentExecutionId] = useState<number | null>(null);
+  const [score, setScore] = useState<number>(0);
 
   const getErrorLine = (error: string): number | undefined => {
     const match = error.match(/line (\d+)/);
@@ -77,7 +77,9 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
         error: isError ? output ? output.join('\n') : null : null,
       };
 
-      await saveCode(submissionData);
+      const response = await saveCode(submissionData);
+      setCurrentExecutionId(response.id);
+      setScore(response.score);
       
       toast({
         title: "Code saved successfully",
@@ -98,37 +100,31 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
   };
 
   const handleSaveAs = async () => {
-    if (!fileName.trim()) {
-      toast({
-        title: "Please enter a file name",
-        status: "warning",
-        duration: 3000,
-      });
-      return;
-    }
+    if (!editorRef.current) return;
+    const sourceCode = editorRef.current.getValue();
+    if (!sourceCode) return;
 
     try {
       setIsSaving(true);
       
       const submissionData = {
-        code: editorRef.current?.getValue() || "",
+        code: sourceCode,
         language,
         question_id: questionId,
         output: output ? output.join('\n') : null,
         error: isError ? output ? output.join('\n') : null : null,
-        filename: fileName.trim()
       };
 
-      await saveCodeAs(submissionData);
+      const response = await saveCodeAs(submissionData);
+      setCurrentExecutionId(response.id);
+      setScore(response.score);
       
       toast({
         title: "Code saved successfully",
-        description: `Saved as ${fileName}`,
+        description: `Saved as version ${response.version}`,
         status: "success",
         duration: 3000,
       });
-      onClose();
-      setFileName("");
     } catch (error) {
       toast({
         title: "Failed to save code",
@@ -141,9 +137,41 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
     }
   };
 
-  const handleLoadCode = (code: string) => {
+  const handleLoadCode = (code: string, executionId: number, score: number) => {
     if (editorRef.current) {
       editorRef.current.setValue(code);
+      setCurrentExecutionId(executionId);
+      setScore(score);
+    }
+  };
+
+  const handleSetScore = async (newScore: number) => {
+    if (!currentExecutionId) {
+      toast({
+        title: "Please save your code first",
+        status: "warning",
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      const response = await setExecutionScore(currentExecutionId, newScore);
+      setScore(response.score);
+      
+      toast({
+        title: "Score updated",
+        description: `Score set to ${response.score}/5`,
+        status: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to update score",
+        description: "Please try again later",
+        status: "error",
+        duration: 6000,
+      });
     }
   };
 
@@ -162,7 +190,7 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
           leftIcon={<SaveAll size={16} />}
           variant="outline"
           colorScheme="blue"
-          onClick={onOpen}
+          onClick={handleSaveAs}
         >
           Save As
         </Button>
@@ -174,6 +202,29 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
         >
           Run Code
         </Button>
+        <Menu>
+          <MenuButton
+            as={Button}
+            leftIcon={<Star size={16} />}
+            variant={score > 0 ? "solid" : "outline"}
+            colorScheme="purple"
+            isDisabled={!currentExecutionId}
+          >
+            {score > 0 ? `${score}/5` : "Score"}
+          </MenuButton>
+          <MenuList bg="#110c1b">
+            {[0, 1, 2, 3, 4, 5].map((value) => (
+              <MenuItem
+                key={value}
+                onClick={() => handleSetScore(value)}
+                bg={score === value ? "#1a1625" : undefined}
+                _hover={{ bg: '#1a1625' }}
+              >
+                {value === 0 ? "No Score" : `${value}/5`}
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Menu>
         <LoadCodeButton 
           questionId={questionId}
           onLoadCode={handleLoadCode}
@@ -190,37 +241,6 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
           ? output.map((line, i) => <Text key={i}>{line}</Text>)
           : <Text color="gray.400">Click "Run Code" to see the output here</Text>}
       </Box>
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent bg="#1a1625">
-          <ModalHeader color="white">Save As</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <FormControl>
-              <FormLabel color="white">File Name</FormLabel>
-              <Input
-                placeholder="Enter file name"
-                value={fileName}
-                onChange={(e) => setFileName(e.target.value)}
-                bg="#110c1b"
-                border="none"
-                color="white"
-                _placeholder={{ color: "gray.400" }}
-              />
-            </FormControl>
-            <Button
-              mt={4}
-              colorScheme="blue"
-              onClick={handleSaveAs}
-              isLoading={isSaving}
-              width="full"
-            >
-              Save
-            </Button>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
     </Box>
   );
 };

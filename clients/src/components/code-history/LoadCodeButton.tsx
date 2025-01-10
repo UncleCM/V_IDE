@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { Button, Menu, MenuButton, MenuList, MenuItem, Text, useToast } from '@chakra-ui/react';
-import { History } from 'lucide-react';
+import { Button, Menu, MenuButton, MenuList, MenuItem, Text, useToast, HStack } from '@chakra-ui/react';
+import { History, Star } from 'lucide-react';
 import { getQuestionExecutions } from '../../api/codeApi';
 import type { CodeExecutionResponse } from '../../api/codeApi';
 import { formatDate } from '../../utils/formatters';
 
 interface LoadCodeButtonProps {
   questionId: number;
-  onLoadCode: (code: string) => void;
+  onLoadCode: (code: string, executionId: number, score: number) => void;
 }
 
 export const LoadCodeButton = ({ questionId, onLoadCode }: LoadCodeButtonProps) => {
@@ -49,13 +49,22 @@ export const LoadCodeButton = ({ questionId, onLoadCode }: LoadCodeButtonProps) 
           executions.map((execution) => (
             <MenuItem
               key={execution.id}
-              onClick={() => onLoadCode(execution.code)}
+              onClick={() => onLoadCode(execution.code, execution.id, execution.score)}
               _hover={{ bg: '#1a1625' }}
             >
-              <Text fontSize="sm">
-                {formatDate(execution.executed_at)}
-                {execution.error ? ' (Had errors)' : ' (Success)'}
-              </Text>
+              <HStack justify="space-between" width="100%">
+                <Text fontSize="sm">
+                  {formatDate(execution.executed_at)}
+                  {execution.version ? ` (v${execution.version})` : ''}
+                  {execution.error ? ' (Had errors)' : ' (Success)'}
+                </Text>
+                {execution.score > 0 && (
+                  <HStack spacing={1}>
+                    <Star size={14} color="#9F7AEA" />
+                    <Text fontSize="sm" color="purple.400">{execution.score}/5</Text>
+                  </HStack>
+                )}
+              </HStack>
             </MenuItem>
           ))
         )}
