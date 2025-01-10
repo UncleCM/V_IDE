@@ -6,6 +6,15 @@ export interface Question {
   defaultCode: string;
 }
 
+export interface QuestionStatus {
+  status: 'not-started' | 'in-progress' | 'completed' | 'error';
+  lastAttempt?: string;
+}
+
+export interface QuestionWithStatus extends Question {
+  status: QuestionStatus['status'];
+}
+
 export interface QuestionListProps {
   onSelectQuestion: (question: Question) => void;
 }

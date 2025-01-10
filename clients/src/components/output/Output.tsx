@@ -22,11 +22,6 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
   const [currentExecutionId, setCurrentExecutionId] = useState<number | null>(null);
   const [score, setScore] = useState<number>(0);
 
-  const getErrorLine = (error: string): number | undefined => {
-    const match = error.match(/line (\d+)/);
-    return match ? parseInt(match[1], 10) : undefined;
-  };
-
   const runCode = async () => {
     if (!editorRef.current) return;
     const sourceCode = editorRef.current.getValue();
@@ -35,21 +30,15 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
     try {
       setIsLoading(true);
       const { run: result } = await executeCode(language, sourceCode);
-      
-      const outputLines = result.output ? result.output.split("\n") : [];
-      setOutput(outputLines);
-      
-      if (result.stderr) {
-        setIsError(true);
-        const errorLine = getErrorLine(result.stderr);
-        onError?.(errorLine);
-      } else {
-        setIsError(false);
-        onError?.(undefined);
+      setOutput(result.output.split("\n"));
+      setIsError(!!result.stderr);
+      if (result.stderr && onError) {
+        // Extract line number from error message if possible
+        const lineMatch = result.stderr.match(/line (\d+)/);
+        onError(lineMatch ? parseInt(lineMatch[1]) : undefined);
       }
     } catch (error) {
       console.error(error);
-      setIsError(true);
       toast({
         title: "An error occurred.",
         description: error instanceof Error ? error.message : "Unable to run code",
@@ -63,36 +52,27 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
 
   const handleSave = async () => {
     if (!editorRef.current) return;
-    const sourceCode = editorRef.current.getValue();
-    if (!sourceCode) return;
-
+    const code = editorRef.current.getValue();
     try {
       setIsSaving(true);
-      
-      const submissionData = {
-        code: sourceCode,
+      const response = await saveCode({
+        code,
         language,
         question_id: questionId,
-        output: output ? output.join('\n') : null,
-        error: isError ? output ? output.join('\n') : null : null,
-      };
-
-      const response = await saveCode(submissionData);
+        output: output?.join("\n") || null,
+        score
+      });
       setCurrentExecutionId(response.id);
-      setScore(response.score);
-      
       toast({
         title: "Code saved successfully",
         status: "success",
         duration: 3000,
       });
     } catch (error) {
-      console.error(error);
       toast({
         title: "Failed to save code",
-        description: "Please try again later",
         status: "error",
-        duration: 6000,
+        duration: 3000,
       });
     } finally {
       setIsSaving(false);
@@ -101,77 +81,57 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
 
   const handleSaveAs = async () => {
     if (!editorRef.current) return;
-    const sourceCode = editorRef.current.getValue();
-    if (!sourceCode) return;
-
+    const code = editorRef.current.getValue();
     try {
       setIsSaving(true);
-      
-      const submissionData = {
-        code: sourceCode,
+      const response = await saveCodeAs({
+        code,
         language,
         question_id: questionId,
-        output: output ? output.join('\n') : null,
-        error: isError ? output ? output.join('\n') : null : null,
-      };
-
-      const response = await saveCodeAs(submissionData);
+        output: output?.join("\n") || null,
+        score
+      });
       setCurrentExecutionId(response.id);
-      setScore(response.score);
-      
       toast({
-        title: "Code saved successfully",
-        description: `Saved as version ${response.version}`,
+        title: "New version saved successfully",
         status: "success",
         duration: 3000,
       });
     } catch (error) {
       toast({
-        title: "Failed to save code",
-        description: "Please try again later",
+        title: "Failed to save new version",
         status: "error",
-        duration: 6000,
+        duration: 3000,
       });
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleLoadCode = (code: string, executionId: number, score: number) => {
-    if (editorRef.current) {
-      editorRef.current.setValue(code);
-      setCurrentExecutionId(executionId);
-      setScore(score);
-    }
-  };
-
   const handleSetScore = async (newScore: number) => {
-    if (!currentExecutionId) {
-      toast({
-        title: "Please save your code first",
-        status: "warning",
-        duration: 3000,
-      });
-      return;
-    }
-
+    if (!currentExecutionId) return;
     try {
       const response = await setExecutionScore(currentExecutionId, newScore);
       setScore(response.score);
-      
       toast({
-        title: "Score updated",
-        description: `Score set to ${response.score}/5`,
+        title: "Score updated successfully",
         status: "success",
         duration: 3000,
       });
     } catch (error) {
       toast({
         title: "Failed to update score",
-        description: "Please try again later",
         status: "error",
-        duration: 6000,
+        duration: 3000,
       });
+    }
+  };
+
+  const handleLoadCode = (code: string, executionId: number, savedScore: number) => {
+    if (editorRef.current) {
+      editorRef.current.setValue(code);
+      setCurrentExecutionId(executionId);
+      setScore(savedScore);
     }
   };
 
@@ -180,7 +140,7 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
       <HStack spacing={4} mb={4}>
         <Button
           leftIcon={<Save size={16} />}
-          colorScheme="blue"
+          colorScheme="purple"
           isLoading={isSaving}
           onClick={handleSave}
         >
@@ -189,7 +149,6 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
         <Button
           leftIcon={<SaveAll size={16} />}
           variant="outline"
-          colorScheme="blue"
           onClick={handleSaveAs}
         >
           Save As
@@ -207,18 +166,15 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
             as={Button}
             leftIcon={<Star size={16} />}
             variant={score > 0 ? "solid" : "outline"}
-            colorScheme="purple"
             isDisabled={!currentExecutionId}
           >
             {score > 0 ? `${score}/5` : "Score"}
           </MenuButton>
-          <MenuList bg="#110c1b">
+          <MenuList>
             {[0, 1, 2, 3, 4, 5].map((value) => (
               <MenuItem
                 key={value}
                 onClick={() => handleSetScore(value)}
-                bg={score === value ? "#1a1625" : undefined}
-                _hover={{ bg: '#1a1625' }}
               >
                 {value === 0 ? "No Score" : `${value}/5`}
               </MenuItem>
@@ -232,14 +188,21 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
       </HStack>
       <Box
         p={4}
-        bg="#110c1b"
+        bg="#1e1e1e"
         borderRadius="md"
         minH="200px"
-        color={isError ? "red.400" : "white"}
+        color={isError ? "brand.accent.error" : "#d4d4d4"}
+        fontFamily="Monaco, Consolas, 'Courier New', monospace"
+        whiteSpace="pre-wrap"
+        overflowX="auto"
       >
         {output
-          ? output.map((line, i) => <Text key={i}>{line}</Text>)
-          : <Text color="gray.400">Click "Run Code" to see the output here</Text>}
+          ? output.map((line, i) => (
+              <Text key={i} color={isError ? "brand.accent.error" : "#d4d4d4"}>
+                {line}
+              </Text>
+            ))
+          : <Text color="gray.500">Click "Run Code" to see the output here</Text>}
       </Box>
     </Box>
   );

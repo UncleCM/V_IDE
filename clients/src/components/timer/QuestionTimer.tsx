@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, HStack, Text, Icon } from '@chakra-ui/react';
+import { HStack, Text, Icon } from '@chakra-ui/react';
 import { Timer } from 'lucide-react';
 
 interface QuestionTimerProps {

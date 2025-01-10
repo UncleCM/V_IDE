@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Box, Container, Grid, GridItem, VStack, Text } from '@chakra-ui/react';
 import CodeEditor from '../components/editor/CodeEditor';
 import QuestionList from '../components/question/QuestionList';
