@@ -17,7 +17,7 @@ const QuestionList = ({ onSelectQuestion }: QuestionListProps) => {
 
   return (
     <VStack spacing={4} align="stretch" mb={6}>
-      <Text fontSize="2xl" fontWeight="bold">
+      <Text fontSize="2xl" fontWeight="bold" color="brand.text.primary">
         Lab Questions
       </Text>
       {questions.map((question) => (
@@ -32,4 +32,4 @@ const QuestionList = ({ onSelectQuestion }: QuestionListProps) => {
   );
 };
 
-export default QuestionList;
+export default QuestionList;  

@@ -15,7 +15,7 @@ const QuestionEditor = ({ question }: QuestionEditorProps) => {
   const [errorLine, setErrorLine] = useState<number | undefined>();
 
   return (
-    <Box p={6} bg="#1a1625" borderRadius="md">
+    <Box p={6} bg="brand.bg.secondary" borderRadius="md">
       <QuestionHeader question={question} />
       <Box mb={4}>
         <EditorPane

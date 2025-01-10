@@ -18,7 +18,7 @@ const QuestionCreatorPage = () => {
   };
 
   return (
-    <Box minH="100vh" bg="#0f0a19">
+    <Box minH="100vh" bg="brand.bg">
       <Container maxW="container.md" py={8}>
         <QuestionForm
           question={question}

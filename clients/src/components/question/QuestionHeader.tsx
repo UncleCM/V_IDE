@@ -8,17 +8,17 @@ interface QuestionHeaderProps {
 const QuestionHeader = ({ question }: QuestionHeaderProps) => {
   return (
     <Box mb={4}>
-      <Text fontWeight="bold" color="white" mb={3} fontSize="lg">
+      <Text fontWeight="bold" color="brand.text.primary" mb={3} fontSize="lg">
         {question.id}. {question.title}
       </Text>
-      <Text color="gray.300" mb={3}>
+      <Text color="brand.text.secondary" mb={3}>
         {question.description}
       </Text>
-      <Box bg="#110c1b" p={4} borderRadius="md">
-        <Text color="gray.400" fontFamily="monospace">
+      <Box bg="brand.bg.primary" p={4} borderRadius="md">
+        <Text color="brand.text.secondary" fontFamily="monospace">
           For example:
         </Text>
-        <Text color="blue.300" fontFamily="monospace" whiteSpace="pre-wrap">
+        <Text color="brand.accent.primary" fontFamily="monospace" whiteSpace="pre-wrap">
           {question.example}
         </Text>
       </Box>

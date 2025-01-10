@@ -3,7 +3,7 @@ import SubjectDashboard from '../components/dashboard/SubjectDashboard';
 
 const DashboardPage = () => {
   return (
-    <Box minH="100vh" bg="#0f0a19">
+    <Box minH="100vh" bg="brand.bg">
       <Container maxW="container.xl" py={8}>
         <SubjectDashboard />
       </Container>

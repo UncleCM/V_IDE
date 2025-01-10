@@ -11,16 +11,16 @@ const QuestionItem = ({ question, isSelected, onClick }: QuestionItemProps) => {
   return (
     <Box
       p={4}
-      bg={isSelected ? "#1a1625" : "#110c1b"}
+      bg={isSelected ? "brand.bg.active" : "brand.bg.secondary"}
       borderRadius="md"
       cursor="pointer"
       onClick={onClick}
-      _hover={{ bg: "#1a1625" }}
+      _hover={{ bg: "brand.bg.hover" }}
     >
-      <Text fontWeight="bold" mb={2}>
+      <Text fontWeight="bold" mb={2} color="brand.text.primary">
         {question.id}. {question.title}
       </Text>
-      <Text color="gray.400">{question.description}</Text>
+      <Text color="brand.text.secondary">{question.description}</Text>
     </Box>
   );
 };

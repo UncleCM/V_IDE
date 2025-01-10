@@ -1,10 +1,10 @@
-import { Box, Container } from "@chakra-ui/react";
-import Header from "../components/Header";
-import CodeEditor from "../components/CodeEditor";
+import { Box, Container } from '@chakra-ui/react';
+import CodeEditor from '../components/CodeEditor';
+import Header from '../components/Header';
 
-const CodeEditorPage = () => {
+const CodingPage = () => {
   return (
-    <Box minH="100vh" bg="#0f0a19">
+    <Box minH="100vh" bg="brand.bg">
       <Container maxW="container.xl" py={8}>
         <Header />
         <CodeEditor />
@@ -13,4 +13,4 @@ const CodeEditorPage = () => {
   );
 };
 
-export default CodeEditorPage;
+export default CodingPage;
