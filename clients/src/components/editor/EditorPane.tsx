@@ -9,7 +9,7 @@ interface EditorPaneProps {
 }
 
 const EditorPane = ({ value, onChange, onMount, errorLine }: EditorPaneProps) => {
-  const handleEditorDidMount = (editor: editor.IStandaloneCodeEditor) => {
+  const handleEditorDidMount = (editor: editor.IStandaloneCodeEditor, monaco: any) => {
     onMount(editor);
     if (errorLine !== undefined) {
       editor.deltaDecorations([], [{

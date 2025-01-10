@@ -8,10 +8,15 @@ import Output from "../output/Output";
 const CodeEditor = () => {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const [value, setValue] = useState<string>("");
+  const [errorLine, setErrorLine] = useState<number | undefined>();
 
   const onMount = (editor: editor.IStandaloneCodeEditor) => {
     editorRef.current = editor;
     editor.focus();
+  };
+
+  const handleError = (line?: number) => {
+    setErrorLine(line);
   };
 
   return (
@@ -24,8 +29,14 @@ const CodeEditor = () => {
           value={value}
           onChange={setValue}
           onMount={onMount}
+          errorLine={errorLine}
         />
-        <Output editorRef={editorRef} language="python" />
+        <Output 
+          editorRef={editorRef} 
+          language="python"
+          questionId={1}
+          onError={handleError}
+        />
       </VStack>
     </HStack>
   );
