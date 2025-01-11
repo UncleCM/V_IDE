@@ -1,84 +1,67 @@
-import React, { useState } from 'react';
-import { Box, Grid, Text, VStack, HStack, Badge, Flex } from '@chakra-ui/react';
-import { Code, GraduationCap, Globe, Database, Shield } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Box, Grid, Text, VStack, HStack, Badge, Flex, Spinner, useToast } from '@chakra-ui/react';
+import { GraduationCap, Globe, BookType, Cpu, Brain } from 'lucide-react';
 import ProfileHeader from './ProfileHeader';
-
-interface Course {
-  id: number;
-  name: string;
-  subject_id: string;
-  subject_credit: number;
-  instructor: string;
-  track: string;
-  year: number;
-  icon: React.ReactNode;
-}
+import { getCoursesByYear, type Course } from '../../api/courseApi';
 
 const tracks = {
-  'Programming': <Code size={20} />,
-  'Web Development': <Globe size={20} />,
-  'Database': <Database size={20} />,
-  'Security': <Shield size={20} />
+  'Artificial Intelligence': <Brain size={20} />,
+  'Industrial IoT': <Cpu size={20} />,
+  'Metaverse': <Globe size={20} />,
+  'Core': <BookType size={20} />
 };
 
-const courses: Course[] = [
-  {
-    id: 1,
-    name: "Computer Programming",
-    subject_id: "01418113",
-    subject_credit: 3,
-    instructor: "Dr. Visit",
-    track: "Programming",
-    year: 1,
-    icon: <Code size={24} />,
-  },
-  {
-    id: 2,
-    name: "Elementary Systems Programming",
-    subject_id: "01418116",
-    subject_credit: 3,
-    instructor: "Dr. Johnson",
-    track: "Programming",
-    year: 1,
-    icon: <Code size={24} />,
-  },
-  {
-    id: 3,
-    name: "Web Programming",
-    subject_id: "01418442",
-    subject_credit: 3,
-    instructor: "Dr. Smith",
-    track: "Web Development",
-    year: 1,
-    icon: <Globe size={24} />,
-  },
-  {
-    id: 4,
-    name: "Database Systems",
-    subject_id: "01418331",
-    subject_credit: 3,
-    instructor: "Dr. Visit",
-    track: "Database",
-    year: 2,
-    icon: <Database size={24} />,
+const getTrackIcon = (track: string | null) => {
+  switch (track) {
+    case 'Artificial Intelligence':
+      return <Brain size={24} />;
+    case 'Industrial IoT':
+      return <Cpu size={24} />;
+    case 'Metaverse':
+      return <Globe size={24} />;
+    default:
+      return <BookType size={24} />;
   }
-];
+};
 
-interface YearSectionProps {
-  courses: Course[];
-}
-
-const getTrackColor = (track: string) => {
+const getTrackColor = (track: string | null) => {
   const colors = {
-    'Programming': 'purple',
-    'Web Development': 'blue',
-    'Database': 'green',
-    'Security': 'red'
+    'Artificial Intelligence': 'purple',
+    'Industrial IoT': 'blue',
+    'Metaverse': 'green',
+    'Core': 'gray'
   };
   return colors[track as keyof typeof colors] || 'gray';
 };
 
-const YearSection: React.FC<YearSectionProps> = ({ courses }) => {
+interface YearSectionProps {
+  courses: Course[] | null;
+  isLoading: boolean;
+}
+
+const YearSection: React.FC<YearSectionProps> = ({ courses, isLoading }) => {
+  if (isLoading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minH="200px">
+        <Spinner size="xl" color="brand.accent.primary" />
+      </Box>
+    );
+  }
+
+  if (!courses || !Array.isArray(courses) || courses.length === 0) {
+    return (
+      <Box 
+        display="flex" 
+        justifyContent="center" 
+        alignItems="center" 
+        minH="200px"
+        color="brand.text.secondary"
+      >
+        No courses found for this year
+      </Box>
+    );
+  }
+
   return (
     <Grid templateColumns="repeat(auto-fill, minmax(350px, 1fr))" gap={6}>
       {courses.map(course => (
@@ -104,22 +87,22 @@ const YearSection: React.FC<YearSectionProps> = ({ courses }) => {
                 borderRadius="lg"
                 color="brand.accent.primary"
               >
-                {course.icon}
+                {getTrackIcon(course.track)}
               </Box>
               <VStack align="start" spacing={1}>
-                <HStack>
-                  <Text fontWeight="bold" color="brand.text.primary">{course.name}</Text>
-                </HStack>
+                <Text fontWeight="bold" color="brand.text.primary" noOfLines={2}>
+                  {course.name}
+                </Text>
                 <HStack spacing={2}>
                   <Badge colorScheme="purple" variant="subtle">
                     {course.subject_id}
                   </Badge>
                   <Badge colorScheme="green" variant="subtle">
-                    {course.subject_credit} Credits
+                    {course.subject_credit}
                   </Badge>
                 </HStack>
                 <Text fontSize="sm" color="brand.text.secondary">
-                  {course.instructor}
+                  {course.lecturer.trim() || 'TBA'}
                 </Text>
               </VStack>
             </HStack>
@@ -133,11 +116,31 @@ const YearSection: React.FC<YearSectionProps> = ({ courses }) => {
                 borderRadius="full"
               >
                 <HStack spacing={2}>
-                  {tracks[course.track as keyof typeof tracks]}
-                  <Text>{course.track}</Text>
+                  {tracks[course.track as keyof typeof tracks] || tracks['Core']}
+                  <Text>{course.track || 'Core'}</Text>
                 </HStack>
               </Badge>
+              <Badge 
+                colorScheme="blue" 
+                variant="subtle"
+                px={3}
+                py={1}
+                borderRadius="full"
+              >
+                {course.semester_course}
+              </Badge>
             </HStack>
+
+            {course.description !== '-' && (
+              <Text 
+                mt={4} 
+                fontSize="sm" 
+                color="brand.text.secondary"
+                noOfLines={2}
+              >
+                {course.description}
+              </Text>
+            )}
           </Box>
         </Box>
       ))}
@@ -147,7 +150,32 @@ const YearSection: React.FC<YearSectionProps> = ({ courses }) => {
 
 const SubjectDashboard = () => {
   const [selectedYear, setSelectedYear] = useState<number>(1);
-  const yearCourses = courses.filter(course => course.year === selectedYear);
+  const [courses, setCourses] = useState<Course[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const toast = useToast();
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getCoursesByYear(selectedYear);
+        setCourses(data);
+      } catch (error) {
+        toast({
+          title: 'Error fetching courses',
+          description: error instanceof Error ? error.message : 'Failed to load courses',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+        setCourses(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, [selectedYear, toast]);
 
   return (
     <VStack spacing={6} align="stretch">
@@ -199,7 +227,7 @@ const SubjectDashboard = () => {
         </Box>
 
         <Box flex="1">
-          <YearSection courses={yearCourses} />
+          <YearSection courses={courses} isLoading={isLoading} />
         </Box>
       </Flex>
     </VStack>

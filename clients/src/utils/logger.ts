@@ -17,7 +17,16 @@ export const logger = {
       error: errorMessage
     });
     
-    // Return the formatted error message for use in UI
     return errorMessage;
+  },
+
+  apiSuccess: (functionName: string, data: any) => {
+    console.log(`✅ API Success: ${functionName}`, {
+      timestamp: new Date().toISOString(),
+      status: 'success',
+      endpoint: functionName,
+      data
+    });
+    return data;
   }
 };
