@@ -1,5 +1,5 @@
 import { VStack, Box } from "@chakra-ui/react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { editor } from 'monaco-editor';
 import EditorPane from "./EditorPane";
 import Output from "../output/Output";
@@ -14,13 +14,15 @@ const CodeEditor = ({ initialCode = "", questionId }: CodeEditorProps) => {
   const [value, setValue] = useState<string>(initialCode);
   const [errorLine, setErrorLine] = useState<number | undefined>();
 
+  // Reset state when question changes
+  useEffect(() => {
+    setValue(initialCode);
+    setErrorLine(undefined);
+  }, [initialCode, questionId]);
+
   const onMount = (editor: editor.IStandaloneCodeEditor) => {
     editorRef.current = editor;
     editor.focus();
-  };
-
-  const handleError = (line?: number) => {
-    setErrorLine(line);
   };
 
   return (
@@ -41,7 +43,7 @@ const CodeEditor = ({ initialCode = "", questionId }: CodeEditorProps) => {
           editorRef={editorRef}
           language="python"
           questionId={questionId}
-          onError={handleError}
+          onError={setErrorLine}
         />
       </Box>
     </VStack>

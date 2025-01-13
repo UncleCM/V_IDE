@@ -18,7 +18,6 @@ const CodingPage = () => {
     <Box minH="100vh" bg="brand.bg.primary">
       <Header />
       <Container maxW="container.xl" py={4} height="calc(100vh - 56px)">
-        {/* Main Content */}
         <Grid 
           templateColumns="300px 1fr" 
           gap={6}
@@ -69,6 +68,7 @@ const CodingPage = () => {
                 </Text>
                 <Box flex={1}>
                   <CodeEditor 
+                    key={selectedQuestion.id} // Force new instance on question change
                     initialCode={selectedQuestion.defaultCode} 
                     questionId={selectedQuestion.id} 
                   />
