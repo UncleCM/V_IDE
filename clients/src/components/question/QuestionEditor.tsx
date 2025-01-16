@@ -23,8 +23,7 @@ const QuestionEditor = ({ question }: QuestionEditorProps) => {
           errorLine={errorLine}
           onMount={(editor) => {
             editorRef.current = editor;
-          }}
-        />
+          } } language={"python"}        />
       </Box>
       <Output 
         editorRef={editorRef} 

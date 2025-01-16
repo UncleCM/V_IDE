@@ -3,7 +3,7 @@ import TeacherDashboard from '../components/dashboard/TeacherDashboard';
 
 const TeacherDashboardPage = () => {
   return (
-    <Box minH="100vh" bg="brand.bg">
+    <Box minH="100vh" bg="brand.bg.primary">
       <Container maxW="container.xl" py={8}>
         <TeacherDashboard />
       </Container>
@@ -11,4 +11,4 @@ const TeacherDashboardPage = () => {
   );
 };
 
-export default TeacherDashboardPage;
+export default TeacherDashboardPage;  

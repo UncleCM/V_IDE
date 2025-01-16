@@ -179,7 +179,7 @@ const SubjectDashboard = () => {
 
   return (
     <VStack spacing={6} align="stretch">
-      <ProfileHeader />
+      <ProfileHeader name={''} role={''} avatarUrl={''} />
       
       <Flex>
         <Box
