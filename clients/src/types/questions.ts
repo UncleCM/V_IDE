@@ -1,9 +1,12 @@
+export type SupportedLanguage = 'python' | 'javascript' | 'typescript' | 'rust' | 'cpp';
+
 export interface Question {
   id: number;
   title: string;
   description: string;
   example: string;
   defaultCode: string;
+  language: SupportedLanguage;
 }
 
 export interface QuestionStatus {

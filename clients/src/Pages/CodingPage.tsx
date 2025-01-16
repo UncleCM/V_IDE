@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Box, Container, Grid, GridItem, VStack, Text } from '@chakra-ui/react';
+import { Box, Container, Grid, GridItem, VStack, Text, HStack, Button, Link } from '@chakra-ui/react';
+import { Book } from 'lucide-react';
 import CodeEditor from '../components/editor/CodeEditor';
 import QuestionList from '../components/question/QuestionList';
 import QuestionHeader from '../components/question/QuestionHeader';
@@ -9,6 +10,15 @@ import type { Question } from '../types/questions';
 
 const CodingPage = () => {
   const [selectedQuestion, setSelectedQuestion] = useState<Question>(questions[0]);
+
+  // Learning resources mapping
+  const learningResources: Record<string, string> = {
+    python: "https://docs.python.org/3/tutorial/",
+    javascript: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide",
+    typescript: "https://www.typescriptlang.org/docs/",
+    rust: "https://doc.rust-lang.org/book/",
+    cpp: "https://www.learncpp.com/"
+  };
 
   const handleQuestionSelect = (question: Question) => {
     setSelectedQuestion(question);
@@ -63,14 +73,31 @@ const CodingPage = () => {
                 display="flex"
                 flexDirection="column"
               >
-                <Text fontSize="lg" fontWeight="semibold" color="brand.text.primary" mb={4}>
-                  IDE
-                </Text>
+                <HStack justify="space-between" align="center" mb={4}>
+                  <Text fontSize="lg" fontWeight="semibold" color="brand.text.primary">
+                    IDE
+                  </Text>
+                  <Link 
+                    href={learningResources[selectedQuestion.language]} 
+                    isExternal
+                    _hover={{ textDecoration: 'none' }}
+                  >
+                    <Button
+                      leftIcon={<Book size={16} />}
+                      variant="outline"
+                      size="sm"
+                      colorScheme="purple"
+                    >
+                      Learn {selectedQuestion.language}
+                    </Button>
+                  </Link>
+                </HStack>
                 <Box flex={1}>
                   <CodeEditor 
-                    key={selectedQuestion.id} // Force new instance on question change
+                    key={selectedQuestion.id}
                     initialCode={selectedQuestion.defaultCode} 
-                    questionId={selectedQuestion.id} 
+                    questionId={selectedQuestion.id}
+                    language={selectedQuestion.language}
                   />
                 </Box>
               </Box>

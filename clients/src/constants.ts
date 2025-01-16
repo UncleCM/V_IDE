@@ -7,6 +7,8 @@ export const LANGUAGE_VERSIONS: LanguageVersions = {
   java: "15.0.2",
   csharp: "6.12.0",
   php: "8.2.3",
+  rust: "1.68.2",
+  cpp: "10.2.0"
 };
 
 export const CODE_SNIPPETS: CodeSnippets = {
@@ -16,4 +18,6 @@ export const CODE_SNIPPETS: CodeSnippets = {
   java: `public class HelloWorld {\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println("Hello World");\n\t}\n}\n`,
   csharp: 'using System;\n\nnamespace HelloWorld\n{\n\tclass Hello { \n\t\tstatic void Main(string[] args) {\n\t\t\tConsole.WriteLine("Hello World in C#");\n\t\t}\n\t}\n}\n',
   php: "<?php\n\n$name = 'Alex';\necho $name;\n",
+  rust: `fn main() {\n\tprintln!("Hello, Rust!");\n}\n`,
+  cpp: `#include <iostream>\nusing namespace std;\n\nint main() {\n\tcout << "Hello, C++" << endl;\n\treturn 0;\n}\n`
 };

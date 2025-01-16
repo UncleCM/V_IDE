@@ -1,14 +1,16 @@
 import { Editor } from "@monaco-editor/react";
 import type { editor } from 'monaco-editor';
+import { SupportedLanguage } from '../../types/questions';
 
 interface EditorPaneProps {
   value: string;
   onChange?: (value: string) => void;
   onMount: (editor: editor.IStandaloneCodeEditor) => void;
   errorLine?: number;
+  language: SupportedLanguage;
 }
 
-const EditorPane = ({ value, onChange, onMount, errorLine }: EditorPaneProps) => {
+const EditorPane = ({ value, onChange, onMount, errorLine, language }: EditorPaneProps) => {
   const handleEditorDidMount = (editor: editor.IStandaloneCodeEditor, monaco: any) => {
     onMount(editor);
     if (errorLine !== undefined) {
@@ -28,7 +30,7 @@ const EditorPane = ({ value, onChange, onMount, errorLine }: EditorPaneProps) =>
     <Editor
       height="300px"
       theme="vs-dark"
-      language="python"
+      language={language.toLowerCase()}
       value={value}
       onChange={(value) => onChange?.(value ?? "")}
       onMount={handleEditorDidMount}

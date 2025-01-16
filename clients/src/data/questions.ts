@@ -1,25 +1,87 @@
 import { Question } from '../types/questions';
+import { LANGUAGE_VERSIONS } from '../constants';
+
+// Get supported languages from LANGUAGE_VERSIONS
+const supportedLanguages = Object.keys(LANGUAGE_VERSIONS);
 
 export const questions: Question[] = [
   {
     id: 1,
-    title: "Simple Print",
-    description: "Write a Python program to print 'Hello, World!' and your name on separate lines.",
-    example: "print('Hello, World!')\nprint('John')\n\nOutput:\nHello, World!\nJohn",
-    defaultCode: "# Write your code here to print Hello, World! and your name\n",
+    title: "Python Function: Calculate Factorial",
+    description: "Write a Python function to calculate the factorial of a number using recursion.",
+    example: `def factorial(n):
+    if n == 0 or n == 1:
+        return 1
+    return n * factorial(n - 1)
+
+# Test the function
+print(factorial(5))  # Output: 120
+print(factorial(3))  # Output: 6`,
+    defaultCode: `def factorial(n):
+    # Write your recursive factorial function here
+    pass
+
+# Test cases
+print(factorial(5))
+print(factorial(3))`,
+    language: "python"
   },
   {
     id: 2,
-    title: "Basic Calculation",
-    description: "Write a Python program that calculates the area of a rectangle given its length and width.",
-    example: "length = 5\nwidth = 3\narea = length * width\nprint(f'Area of rectangle: {area}')\n\nOutput:\nArea of rectangle: 15",
-    defaultCode: "# Calculate the area of a rectangle\nlength = 5\nwidth = 3\n\n# Write your code here\n",
+    title: "Rust Function: String Reversal",
+    description: "Write a Rust function to reverse a string.",
+    example: `fn reverse_string(s: &str) -> String {
+    s.chars().rev().collect()
+}
+
+fn main() {
+    let result = reverse_string("Hello, Rust!");
+    println!("{}", result);  // Output: !tsuR ,olleH
+}`,
+    defaultCode: `fn reverse_string(s: &str) -> String {
+    // Write your string reversal function here
+}
+
+fn main() {
+    let result = reverse_string("Hello, Rust!");
+    println!("{}", result);
+}`,
+    language: "rust"
   },
   {
     id: 3,
-    title: "Simple Loop",
-    description: "Write a Python program that prints the first 5 numbers and their squares using a for loop.",
-    example: "for i in range(1, 6):\n    print(f'{i} squared is {i**2}')\n\nOutput:\n1 squared is 1\n2 squared is 4\n3 squared is 9\n4 squared is 16\n5 squared is 25",
-    defaultCode: "# Write a loop to print numbers 1-5 and their squares\n",
-  },
+    title: "C++ Function: Array Sum",
+    description: "Write a C++ function to calculate the sum of an array of integers.",
+    example: `#include <iostream>
+using namespace std;
+
+int array_sum(int arr[], int size) {
+    int sum = 0;
+    for(int i = 0; i < size; i++) {
+        sum += arr[i];
+    }
+    return sum;
+}
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    cout << "Sum: " << array_sum(arr, size) << endl;  // Output: Sum: 15
+    return 0;
+}`,
+    defaultCode: `#include <iostream>
+using namespace std;
+
+int array_sum(int arr[], int size) {
+    // Write your array sum function here
+}
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    cout << "Sum: " << array_sum(arr, size) << endl;
+    return 0;
+}`,
+    language: "cpp"
+  }
 ];

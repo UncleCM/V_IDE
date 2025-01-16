@@ -3,13 +3,15 @@ import { useState, useRef, useEffect } from "react";
 import type { editor } from 'monaco-editor';
 import EditorPane from "./EditorPane";
 import Output from "../output/Output";
+import { SupportedLanguage } from "../../types/questions";
 
 interface CodeEditorProps {
   initialCode?: string;
   questionId: number;
+  language: SupportedLanguage;
 }
 
-const CodeEditor = ({ initialCode = "", questionId }: CodeEditorProps) => {
+const CodeEditor = ({ initialCode = "", questionId, language }: CodeEditorProps) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const [value, setValue] = useState<string>(initialCode);
   const [errorLine, setErrorLine] = useState<number | undefined>();
@@ -34,6 +36,7 @@ const CodeEditor = ({ initialCode = "", questionId }: CodeEditorProps) => {
           onChange={setValue}
           onMount={onMount}
           errorLine={errorLine}
+          language={language}
         />
       </Box>
 
@@ -41,7 +44,7 @@ const CodeEditor = ({ initialCode = "", questionId }: CodeEditorProps) => {
       <Box width="100%">
         <Output 
           editorRef={editorRef}
-          language="python"
+          language={language}
           questionId={questionId}
           onError={setErrorLine}
         />

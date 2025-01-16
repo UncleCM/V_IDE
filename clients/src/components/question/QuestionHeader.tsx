@@ -1,5 +1,4 @@
-import { Box, Text, VStack} from "@chakra-ui/react";
-import { Timer } from "lucide-react";
+import { Box, Text, VStack } from "@chakra-ui/react";
 import { Question } from "../../types/questions";
 import QuestionTimer from "../timer/QuestionTimer";
 
@@ -21,6 +20,7 @@ const QuestionHeader = ({ question }: QuestionHeaderProps) => {
       <Text color="brand.text.secondary">
         {question.description}
       </Text>
+
       <Box bg="brand.bg.primary" p={4} borderRadius="md">
         <Text color="brand.text.secondary" fontFamily="monospace" mb={2}>
           Example:

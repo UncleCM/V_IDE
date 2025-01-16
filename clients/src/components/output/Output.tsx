@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Button, Text, useToast, HStack, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { editor } from 'monaco-editor';
-import { executeCode } from "../../api";
+import { executePistonCode } from "../../api/pistonApi";
 import { saveCode, saveCodeAs, setExecutionScore } from "../../api/codeApi";
 import { LoadCodeButton } from "../code-history/LoadCodeButton";
 import { Save, SaveAll, Star } from "lucide-react";
@@ -29,13 +29,19 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
     
     try {
       setIsLoading(true);
-      const { run: result } = await executeCode(language, sourceCode);
-      setOutput(result.output.split("\n"));
-      setIsError(!!result.stderr);
-      if (result.stderr && onError) {
-        // Extract line number from error message if possible
-        const lineMatch = result.stderr.match(/line (\d+)/);
+      const result = await executePistonCode(language, sourceCode);
+      
+      // Combine stdout and stderr for output
+      const outputText = result.run.stderr ? result.run.stderr : result.run.stdout;
+      setOutput(outputText.split("\n"));
+      setIsError(!!result.run.stderr);
+
+      if (result.run.stderr && onError) {
+        // Try to extract line number from error message
+        const lineMatch = result.run.stderr.match(/line (\d+)/);
         onError(lineMatch ? parseInt(lineMatch[1]) : undefined);
+      } else if (onError) {
+        onError(undefined);
       }
     } catch (error) {
       console.error(error);
@@ -196,13 +202,15 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
         whiteSpace="pre-wrap"
         overflowX="auto"
       >
-        {output
-          ? output.map((line, i) => (
-              <Text key={i} color={isError ? "brand.accent.error" : "#d4d4d4"}>
-                {line}
-              </Text>
-            ))
-          : <Text color="gray.500">Click "Run Code" to see the output here</Text>}
+        {output ? (
+          output.map((line, i) => (
+            <Text key={i} color={isError ? "brand.accent.error" : "#d4d4d4"}>
+              {line}
+            </Text>
+          ))
+        ) : (
+          <Text color="gray.500">Click "Run Code" to see the output here</Text>
+        )}
       </Box>
     </Box>
   );
