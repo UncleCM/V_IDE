@@ -37,13 +37,13 @@ export const getCourses = async (): Promise<Course[]> => {
   }
 };
 
-export const getCoursesByYear = async (year: number): Promise<Course[]> => {
+export const getCoursesByYear = async (year: string): Promise<Course[]> => {
   logger.apiCall('getCoursesByYear');
   try {
     const response = await API.get<Course[]>('/api/courses/subject/');
     const courses = response.data.filter(course => 
-      course.year_course === `Year ${year}` && 
-      course.program === "Software-Engineering-2024"
+      course.year_course === year && 
+      course.program === "Software Engineering"
     );
     return logger.apiSuccess('getCoursesByYear', courses);
   } catch (error) {

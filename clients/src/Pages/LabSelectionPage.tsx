@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Box, Container, Grid, VStack, Text, HStack, Badge, Icon } from '@chakra-ui/react';
 import { Book, ChevronRight, ScrollText, Timer } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

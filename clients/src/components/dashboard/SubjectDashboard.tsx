@@ -158,7 +158,7 @@ const SubjectDashboard = () => {
     const fetchCourses = async () => {
       try {
         setIsLoading(true);
-        const data = await getCoursesByYear(selectedYear);
+        const data = await getCoursesByYear(`${selectedYear} Year`);
         setCourses(data);
       } catch (error) {
         toast({
@@ -179,7 +179,11 @@ const SubjectDashboard = () => {
 
   return (
     <VStack spacing={6} align="stretch">
-      <ProfileHeader />
+      <ProfileHeader 
+        name="John Doe"
+        role="Computer Science"
+        avatarUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?fit=facearea&facepad=2&w=256&h=256&q=80"
+      />
       
       <Flex>
         <Box
