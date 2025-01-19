@@ -1,4 +1,3 @@
-import React from 'react';
 import { VStack, HStack, Box, Text, Divider } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { Book, ChevronRight, Award, Clock, TrendingUp, Target, Activity } from 'lucide-react';

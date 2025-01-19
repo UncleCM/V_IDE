@@ -78,9 +78,8 @@ const handleLabSelect = (courseId: number) => {
 };
 
 
-  const handleCourseDetails = (courseId: number) => {
-    // For now, we'll just log - this would navigate to course details page
-    console.log('Navigate to course details:', courseId);
+  const handleLabScores = (courseId: number) => {
+    navigate(`LabScore/`); 
   };
 
   return (
@@ -198,7 +197,7 @@ const handleLabSelect = (courseId: number) => {
                   leftIcon={<ExternalLink size={16} />}
                   size="sm"
                   variant="outline"
-                  onClick={() => handleCourseDetails(course.id)}
+                  onClick={() => handleLabScores(course.id)}
                   transform={hoveredCourse === course.id ? "translateX(0)" : "translateX(-20px)"}
                   opacity={hoveredCourse === course.id ? 1 : 0}
                   transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
@@ -207,7 +206,7 @@ const handleLabSelect = (courseId: number) => {
                     transform: "translateX(0) scale(1.05)",
                   }}
                 >
-                  Course Details
+                  view Labs Scores
                 </Button>
                 <Button
                   leftIcon={<Beaker size={16} />}
@@ -221,7 +220,7 @@ const handleLabSelect = (courseId: number) => {
                     transform: "translateX(0) scale(1.05)",
                   }}
                 >
-                  Labs
+                  Labs Selection
                 </Button>
               </HStack>
             </Box>

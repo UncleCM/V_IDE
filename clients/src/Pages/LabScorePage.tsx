@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Container, Grid, Table, Thead, Tbody, Tr, Th, Td, Text, VStack, HStack, Badge, Spinner, useToast } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
-import Header from '../components/Header';
 import LabScoreSidebar from '../components/lab-score/LabScoreSidebar';
+import ProfileHeader from '../components/dashboard/ProfileHeader';
 
 const MotionBox = motion(Box);
 
@@ -110,8 +110,12 @@ const LabScorePage = () => {
 
   return (
     <Box minH="100vh" bg="brand.bg.primary">
-      <Header />
-      <Container maxW="container.xl" py={8}>
+      <Container maxW="container.xl" py={8} >
+        <ProfileHeader
+          name="John Doe"
+          role="Computer Science"
+          avatarUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?fit=facearea&facepad=2&w=256&h=256&q=80"
+        />
         <Grid templateColumns="300px 1fr" gap={6} height="calc(100vh - 200px)">
           {/* Left Sidebar */}
           <Box 
@@ -127,7 +131,7 @@ const LabScorePage = () => {
               labs={labs}
               selectedLabId={selectedLabId}
               onLabSelect={(lab) => setSelectedLabId(lab.id)}
-              overallMetrics={overallMetrics}
+              overallMetrics={overallMetrics} // Ensure this is passed
             />
           </Box>
 
@@ -168,7 +172,7 @@ const LabScorePage = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {selectedLab.questions.map((question) => (
+                    {selectedLab.questions.map((question: Question) => (
                       <Tr key={question.id}>
                         <Td>{question.title}</Td>
                         <Td isNumeric>

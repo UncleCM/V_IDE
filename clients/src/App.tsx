@@ -17,7 +17,7 @@ const App: React.FC = () => {
         <Route path="/LabSelection/:courseId" element={<LabSelectionPage />} />
         <Route path="/CodeEditor/:courseId/:labId" element={<CodingPage />} />
         <Route path="/QuestionCreator" element={<QuestionCreatorPage />} />
-        <Route path="/LabScore/:courseId/:studentId" element={<LabScorePage />} />
+        <Route path="/LabScore/" element={<LabScorePage />} />
       </Routes>
     </BrowserRouter>
   );
