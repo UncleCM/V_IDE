@@ -5,6 +5,7 @@ import QuestionCreatorPage from './Pages/QuestionCreator';
 import DashboardPage from './Pages/DashboardPage';
 import TeacherDashboardPage from './Pages/TeacherDashboardPage';
 import LabSelectionPage from './Pages/LabSelectionPage';
+import LabScorePage from './Pages/LabScorePage';
 
 const App: React.FC = () => {
   return (
@@ -13,9 +14,10 @@ const App: React.FC = () => {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/teacher" element={<TeacherDashboardPage />} />
         <Route path="/student" element={<DashboardPage />} />
-        <Route path="/LabSelection" element={<LabSelectionPage />} />
-        <Route path="/CodeEditor" element={<CodingPage />} />
+        <Route path="/LabSelection/:courseId" element={<LabSelectionPage />} />
+        <Route path="/CodeEditor/:courseId/:labId" element={<CodingPage />} />
         <Route path="/QuestionCreator" element={<QuestionCreatorPage />} />
+        <Route path="/LabScore/:courseId/:studentId" element={<LabScorePage />} />
       </Routes>
     </BrowserRouter>
   );

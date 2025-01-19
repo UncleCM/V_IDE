@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Text, VStack, HStack, Badge, Flex, Spinner, useToast } from '@chakra-ui/react';
-import { GraduationCap, Globe, BookType, Cpu, Brain } from 'lucide-react';
+import { Box, Grid, Text, VStack, HStack, Badge, Flex, Spinner, useToast, Button } from '@chakra-ui/react';
+import { keyframes } from '@emotion/react';
+import { GraduationCap, Globe, BookType, Cpu, Brain, ExternalLink, Beaker } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import ProfileHeader from './ProfileHeader';
 import { getCoursesByYear, type Course } from '../../api/courseApi';
+
+// Define keyframes for animations
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 const tracks = {
   'Artificial Intelligence': <Brain size={20} />,
@@ -40,6 +48,9 @@ interface YearSectionProps {
 }
 
 const YearSection: React.FC<YearSectionProps> = ({ courses, isLoading }) => {
+  const navigate = useNavigate();
+  const [hoveredCourse, setHoveredCourse] = useState<number | null>(null);
+
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minH="200px">
@@ -62,9 +73,19 @@ const YearSection: React.FC<YearSectionProps> = ({ courses, isLoading }) => {
     );
   }
 
+const handleLabSelect = (courseId: number) => {
+  navigate(`/LabSelection/${courseId}`);
+};
+
+
+  const handleCourseDetails = (courseId: number) => {
+    // For now, we'll just log - this would navigate to course details page
+    console.log('Navigate to course details:', courseId);
+  };
+
   return (
     <Grid templateColumns="repeat(auto-fill, minmax(350px, 1fr))" gap={6}>
-      {courses.map(course => (
+      {courses.map((course, index) => (
         <Box
           key={course.id}
           bg="brand.bg.secondary"
@@ -72,25 +93,41 @@ const YearSection: React.FC<YearSectionProps> = ({ courses, isLoading }) => {
           border="1px"
           borderColor="brand.border.light"
           overflow="hidden"
-          _hover={{ 
-            transform: 'translateY(-2px)',
-            transition: 'all 0.2s',
-            boxShadow: 'lg'
+          position="relative"
+          onMouseEnter={() => setHoveredCourse(course.id)}
+          onMouseLeave={() => setHoveredCourse(null)}
+          transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+          transform={hoveredCourse === course.id ? "translateY(-4px)" : "none"}
+          animation={`${fadeIn} 0.6s ease-out ${index * 0.1}s both`}
+          _hover={{
+            boxShadow: "0 4px 20px -1px rgba(128, 90, 213, 0.2)",
+            borderColor: "brand.accent.primary",
           }}
-          cursor="pointer"
         >
-          <Box p={6}>
+          <Box 
+            p={6}
+            transition="all 0.3s ease"
+            bg={hoveredCourse === course.id ? "brand.bg.hover" : "brand.bg.secondary"}
+          >
             <HStack spacing={4} mb={4}>
               <Box
                 p={3}
                 bg="brand.bg.primary"
                 borderRadius="lg"
                 color="brand.accent.primary"
+                transform={hoveredCourse === course.id ? "scale(1.1)" : "scale(1)"}
+                transition="transform 0.3s ease"
               >
                 {getTrackIcon(course.track)}
               </Box>
               <VStack align="start" spacing={1}>
-                <Text fontWeight="bold" color="brand.text.primary" noOfLines={2}>
+                <Text 
+                  fontWeight="bold" 
+                  color="brand.text.primary" 
+                  noOfLines={2}
+                  transform={hoveredCourse === course.id ? "translateX(8px)" : "translateX(0)"}
+                  transition="transform 0.3s ease"
+                >
                   {course.name}
                 </Text>
                 <HStack spacing={2}>
@@ -141,6 +178,53 @@ const YearSection: React.FC<YearSectionProps> = ({ courses, isLoading }) => {
                 {course.description}
               </Text>
             )}
+
+            {/* Hover Actions */}
+            <Box
+              position="absolute"
+              bottom={0}
+              left={0}
+              right={0}
+              bg="brand.bg.hover"
+              p={4}
+              transform={hoveredCourse === course.id ? "translateY(0)" : "translateY(100%)"}
+              opacity={hoveredCourse === course.id ? 1 : 0}
+              transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+              borderTop="1px"
+              borderColor="brand.border.light"
+            >
+              <HStack spacing={4} justify="space-between">
+                <Button
+                  leftIcon={<ExternalLink size={16} />}
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleCourseDetails(course.id)}
+                  transform={hoveredCourse === course.id ? "translateX(0)" : "translateX(-20px)"}
+                  opacity={hoveredCourse === course.id ? 1 : 0}
+                  transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                  _hover={{
+                    bg: "brand.bg.primary",
+                    transform: "translateX(0) scale(1.05)",
+                  }}
+                >
+                  Course Details
+                </Button>
+                <Button
+                  leftIcon={<Beaker size={16} />}
+                  size="sm"
+                  colorScheme="purple"
+                  onClick={() => handleLabSelect(course.id)}
+                  transform={hoveredCourse === course.id ? "translateX(0)" : "translateX(20px)"}
+                  opacity={hoveredCourse === course.id ? 1 : 0}
+                  transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                  _hover={{
+                    transform: "translateX(0) scale(1.05)",
+                  }}
+                >
+                  Labs
+                </Button>
+              </HStack>
+            </Box>
           </Box>
         </Box>
       ))}

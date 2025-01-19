@@ -1,4 +1,4 @@
-import { VStack, Text } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { questions } from "../../data/questions";
 import { Question, QuestionListProps, QuestionWithStatus } from "../../types/questions";

@@ -26,6 +26,19 @@ export interface Course {
   content: string;
 }
 
+export interface Lab {
+  id: number;
+  title: string;
+  topic: string;
+  questions: number;
+  duration: string;
+  status: 'Not Started' | 'In Progress' | 'Completed';
+  description?: string;
+  course_id: number;
+  start_date?: string;
+  end_date?: string;
+}
+
 export const getCourses = async (): Promise<Course[]> => {
   logger.apiCall('getCourses');
   try {
@@ -48,6 +61,32 @@ export const getCoursesByYear = async (year: string): Promise<Course[]> => {
     return logger.apiSuccess('getCoursesByYear', courses);
   } catch (error) {
     const errorMessage = logger.apiError('getCoursesByYear', error);
+    throw new Error(errorMessage);
+  }
+};
+
+export const getLabsByCourseId = async (courseId: string): Promise<Lab[]> => {
+  logger.apiCall('getLabsByCourseId');
+  try {
+    const response = await API.get<Lab[]>(`/api/coding/labtest/${courseId}`);
+    return logger.apiSuccess('getLabsByCourseId', response.data);
+  } catch (error) {
+    const errorMessage = logger.apiError('getLabsByCourseId', error);
+    throw new Error(errorMessage);
+  }
+};
+
+export const getCourseById = async (courseId: string): Promise<Course> => {
+  logger.apiCall('getCourseById');
+  try {
+    const courses = await getCourses();
+    const course = courses.find(c => c.id === parseInt(courseId));
+    if (!course) {
+      throw new Error('Course not found');
+    }
+    return logger.apiSuccess('getCourseById', course);
+  } catch (error) {
+    const errorMessage = logger.apiError('getCourseById', error);
     throw new Error(errorMessage);
   }
 };
