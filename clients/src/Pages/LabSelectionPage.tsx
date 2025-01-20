@@ -1,64 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Grid, Table, Thead, Tbody, Tr, Th, Td, Text, VStack, HStack, Badge, Spinner, useToast } from '@chakra-ui/react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Box, Container, Grid, VStack, Text, HStack, Badge, Icon, Button, Spinner, useToast } from '@chakra-ui/react';
+import { Book, ChevronRight, ScrollText, Timer, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Award, Star, Clock, TrendingUp, Target, Activity } from 'lucide-react';
 import Header from '../components/Header';
-import { getLabsByCourseId, type Lab } from '../api/courseApi';
-import { CodeExecutionResponse } from '../api/codeApi';
+import { getLabsByCourseId, getCourseById, type Lab, type Course } from '../api/courseApi';
 
-const MotionBox = motion(Box);
+const MotionBox = motion.create(Box);
 
-interface LabScore {
-  labId: number;
-  labTitle: string;
-  questions: {
-    id: number;
-    title: string;
-    score: number;
-    attempts: number;
-    timeSpent: string;
-  }[];
-  averageScore: number;
-  totalTimeSpent: string;
-}
+const getStatusColor = (status: Lab['status']) => {
+  switch (status) {
+    case 'Completed':
+      return 'green';
+    case 'In Progress':
+      return 'orange';
+    case 'Not Started':
+    default:
+      return 'gray';
+  }
+};
 
-const LabScorePage = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [labScores, setLabScores] = useState<LabScore[]>([]);
+
+
+const LabSelectionPage = () => {
+  const { courseId } = useParams<{ courseId: string }>();
+  const navigate = useNavigate();
   const toast = useToast();
+  
+  const [selectedLab, setSelectedLab] = useState<Lab | null>(null);
+  const [labs, setLabs] = useState<Lab[]>([]);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadScores = async () => {
+    const loadData = async () => {
+      if (!courseId) {
+        toast({
+          title: 'Error',
+          description: 'No course ID provided',
+          status: 'error',
+          duration: 5000,
+        });
+        return;
+      }
+
       try {
         setIsLoading(true);
-        // TODO: Replace with actual API call
-        const mockScores: LabScore[] = [
-          {
-            labId: 1,
-            labTitle: "Python Lab #1",
-            questions: [
-              { id: 1, title: "Factorial", score: 5, attempts: 2, timeSpent: "25m" },
-              { id: 2, title: "Fibonacci", score: 4, attempts: 3, timeSpent: "35m" }
-            ],
-            averageScore: 4.5,
-            totalTimeSpent: "1h"
-          },
-          {
-            labId: 2,
-            labTitle: "Python Lab #2",
-            questions: [
-              { id: 3, title: "Binary Search", score: 3, attempts: 4, timeSpent: "45m" },
-              { id: 4, title: "Quick Sort", score: 5, attempts: 1, timeSpent: "30m" }
-            ],
-            averageScore: 4,
-            totalTimeSpent: "1h 15m"
-          }
-        ];
-        setLabScores(mockScores);
+        const [courseData, labsData] = await Promise.all([
+          getCourseById(courseId),
+          getLabsByCourseId(courseId)
+        ]);
+        
+        setCourse(courseData);
+        setLabs(labsData);
       } catch (error) {
         toast({
-          title: 'Error loading scores',
-          description: error instanceof Error ? error.message : 'Failed to load lab scores',
+          title: 'Error loading data',
+          description: error instanceof Error ? error.message : 'Failed to load course data',
           status: 'error',
           duration: 5000,
         });
@@ -67,13 +65,12 @@ const LabScorePage = () => {
       }
     };
 
-    loadScores();
-  }, [toast]);
+    loadData();
+  }, [courseId, toast]);
 
-  const getScoreColor = (score: number) => {
-    if (score >= 4) return "green";
-    if (score >= 3) return "yellow";
-    return "red";
+  const handleLabClick = (lab: Lab) => {
+    setSelectedLab(lab);
+    navigate(`/CodeEditor/${courseId}/${lab.id}`);
   };
 
   if (isLoading) {
@@ -84,167 +81,193 @@ const LabScorePage = () => {
     );
   }
 
+  if (!course) {
+    return (
+      <Box minH="100vh" bg="brand.bg.primary" display="flex" alignItems="center" justifyContent="center">
+        <VStack spacing={4}>
+          <AlertCircle size={48} color="var(--chakra-colors-brand-accent-error)" />
+          <Text color="brand.text.primary">Course not found</Text>
+        </VStack>
+      </Box>
+    );
+  }
+
   return (
     <Box minH="100vh" bg="brand.bg.primary">
       <Header />
       <Container maxW="container.xl" py={8}>
         <Grid templateColumns="300px 1fr" gap={6}>
-          {/* Left Sidebar - Summary */}
-          <VStack spacing={4} align="stretch">
-            {/* Profile Summary */}
-            <MotionBox
-              bg="brand.bg.secondary"
-              p={6}
-              borderRadius="lg"
-              border="1px"
-              borderColor="brand.border.light"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <VStack spacing={6} align="stretch">
-                <HStack spacing={4}>
-                  <Box
-                    p={3}
-                    bg="brand.bg.primary"
-                    borderRadius="lg"
-                    color="brand.accent.success"
-                  >
-                    <Award size={24} />
-                  </Box>
-                  <VStack align="start" spacing={1}>
-                    <Text color="brand.text.secondary" fontSize="sm">Overall Score</Text>
-                    <Text color="brand.text.primary" fontSize="2xl" fontWeight="bold">
-                      4.25/5.0
-                    </Text>
-                  </VStack>
-                </HStack>
-
-                <HStack spacing={4}>
-                  <Box
-                    p={3}
-                    bg="brand.bg.primary"
-                    borderRadius="lg"
-                    color="brand.accent.warning"
-                  >
-                    <Clock size={24} />
-                  </Box>
-                  <VStack align="start" spacing={1}>
-                    <Text color="brand.text.secondary" fontSize="sm">Total Time</Text>
-                    <Text color="brand.text.primary" fontSize="2xl" fontWeight="bold">
-                      2h 15m
-                    </Text>
-                  </VStack>
-                </HStack>
-              </VStack>
-            </MotionBox>
-
-            {/* Performance Metrics */}
-            <MotionBox
-              bg="brand.bg.secondary"
-              p={6}
-              borderRadius="lg"
-              border="1px"
-              borderColor="brand.border.light"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-            >
-              <VStack spacing={6} align="stretch">
-                <Text fontSize="lg" fontWeight="bold" color="brand.text.primary">
-                  Performance Metrics
-                </Text>
-
-                <VStack spacing={4} align="stretch">
-                  <HStack justify="space-between">
-                    <HStack spacing={3}>
-                      <TrendingUp size={16} color="var(--chakra-colors-brand-accent-success)" />
-                      <Text color="brand.text.secondary">Success Rate</Text>
-                    </HStack>
-                    <Text color="brand.text.primary" fontWeight="bold">85%</Text>
-                  </HStack>
-
-                  <HStack justify="space-between">
-                    <HStack spacing={3}>
-                      <Target size={16} color="var(--chakra-colors-brand-accent-primary)" />
-                      <Text color="brand.text.secondary">Completion Rate</Text>
-                    </HStack>
-                    <Text color="brand.text.primary" fontWeight="bold">90%</Text>
-                  </HStack>
-
-                  <HStack justify="space-between">
-                    <HStack spacing={3}>
-                      <Activity size={16} color="var(--chakra-colors-brand-accent-warning)" />
-                      <Text color="brand.text.secondary">Avg. Attempts</Text>
-                    </HStack>
-                    <Text color="brand.text.primary" fontWeight="bold">2.5</Text>
-                  </HStack>
-                </VStack>
-              </VStack>
-            </MotionBox>
-          </VStack>
-
-          {/* Right Side - Detailed Scores */}
-          <MotionBox
+          {/* Left Sidebar - Lab List */}
+          <VStack 
+            spacing={4} 
+            align="stretch"
             bg="brand.bg.secondary"
+            p={4}
             borderRadius="lg"
             border="1px"
             borderColor="brand.border.light"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
           >
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Lab</Th>
-                  <Th>Question</Th>
-                  <Th isNumeric>Score</Th>
-                  <Th isNumeric>Attempts</Th>
-                  <Th isNumeric>Time Spent</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {labScores.map((lab) => (
-                  <React.Fragment key={lab.labId}>
-                    {lab.questions.map((question, qIndex) => (
-                      <Tr key={question.id}>
-                        {qIndex === 0 && (
-                          <Td rowSpan={lab.questions.length}>
-                            <VStack align="start" spacing={2}>
-                              <Text fontWeight="medium">{lab.labTitle}</Text>
-                              <HStack>
-                                <Text fontSize="sm" color="brand.text.secondary">Avg:</Text>
-                                <Badge colorScheme={getScoreColor(lab.averageScore)}>
-                                  {lab.averageScore.toFixed(1)}/5
-                                </Badge>
-                              </HStack>
-                              <Text fontSize="sm" color="brand.text.secondary">
-                                Total: {lab.totalTimeSpent}
-                              </Text>
-                            </VStack>
-                          </Td>
-                        )}
-                        <Td>{question.title}</Td>
-                        <Td isNumeric>
-                          <HStack justify="flex-end" spacing={1}>
-                            <Star size={16} color={`var(--chakra-colors-${getScoreColor(question.score)}-500)`} />
-                            <Text>{question.score}/5</Text>
-                          </HStack>
-                        </Td>
-                        <Td isNumeric>{question.attempts}</Td>
-                        <Td isNumeric>{question.timeSpent}</Td>
-                      </Tr>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </Tbody>
-            </Table>
-          </MotionBox>
+            <Text fontSize="lg" fontWeight="bold" color="brand.text.primary">
+              {course.name} Labs
+            </Text>
+            <VStack spacing={2} align="stretch">
+              {labs.map((lab, index) => (
+                <MotionBox
+                  key={lab.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  <Box
+                    p={4}
+                    bg={selectedLab?.id === lab.id ? 'brand.bg.active' : 'brand.bg.primary'}
+                    borderRadius="lg"
+                    cursor="pointer"
+                    onClick={() => handleLabClick(lab)}
+                    _hover={{ bg: 'brand.bg.hover' }}
+                    border="1px"
+                    borderColor="brand.border.light"
+                    transition="all 0.2s"
+                  >
+                    <HStack justify="space-between">
+                      <VStack align="start" spacing={2}>
+                        <HStack>
+                          <Icon as={Book} color="brand.accent.primary" />
+                          <Text color="brand.text.primary" fontWeight="medium">
+                            {lab.title}
+                          </Text>
+                        </HStack>
+                        <Badge colorScheme={getStatusColor(lab.status)}>
+                          {lab.status}
+                        </Badge>
+                      </VStack>
+                      <ChevronRight color="var(--chakra-colors-brand-text-secondary)" />
+                    </HStack>
+                  </Box>
+                </MotionBox>
+              ))}
+
+              {labs.length === 0 && (
+                <Box 
+                  p={4} 
+                  bg="brand.bg.primary" 
+                  borderRadius="lg"
+                  border="1px"
+                  borderColor="brand.border.light"
+                >
+                  <Text color="brand.text.secondary" textAlign="center">
+                    No labs available for this course
+                  </Text>
+                </Box>
+              )}
+            </VStack>
+          </VStack>
+
+          {/* Right Side - Lab Details */}
+          <Box
+            bg="brand.bg.secondary"
+            p={6}
+            borderRadius="lg"
+            border="1px"
+            borderColor="brand.border.light"
+          >
+            {selectedLab ? (
+              <MotionBox
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <VStack align="stretch" spacing={6}>
+                  <HStack justify="space-between">
+                    <VStack align="start" spacing={1}>
+                      <Text fontSize="2xl" fontWeight="bold" color="brand.text.primary">
+                        {selectedLab.title}
+                      </Text>
+                      <Text color="brand.text.secondary">
+                        {selectedLab.topic}
+                      </Text>
+                    </VStack>
+                    <Badge 
+                      colorScheme={getStatusColor(selectedLab.status)}
+                      p={2}
+                      borderRadius="md"
+                    >
+                      {selectedLab.status}
+                    </Badge>
+                  </HStack>
+
+                  <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                    <HStack 
+                      p={4} 
+                      bg="brand.bg.primary" 
+                      borderRadius="lg"
+                      border="1px"
+                      borderColor="brand.border.light"
+                    >
+                      <ScrollText size={20} color="var(--chakra-colors-brand-accent-primary)" />
+                      <VStack align="start" spacing={0}>
+                        <Text color="brand.text.secondary" fontSize="sm">Questions</Text>
+                        <Text color="brand.text.primary" fontWeight="bold">{selectedLab.questions}</Text>
+                      </VStack>
+                    </HStack>
+
+                    <HStack 
+                      p={4} 
+                      bg="brand.bg.primary" 
+                      borderRadius="lg"
+                      border="1px"
+                      borderColor="brand.border.light"
+                    >
+                      <Timer size={20} color="var(--chakra-colors-brand-accent-primary)" />
+                      <VStack align="start" spacing={0}>
+                        <Text color="brand.text.secondary" fontSize="sm">Duration</Text>
+                        <Text color="brand.text.primary" fontWeight="bold">{selectedLab.duration}</Text>
+                      </VStack>
+                    </HStack>
+                  </Grid>
+
+                  {selectedLab.description && (
+                    <Box
+                      p={4}
+                      bg="brand.bg.primary"
+                      borderRadius="lg"
+                      border="1px"
+                      borderColor="brand.border.light"
+                    >
+                      <Text color="brand.text.secondary" whiteSpace="pre-wrap">
+                        {selectedLab.description}
+                      </Text>
+                    </Box>
+                  )}
+
+                  <Box pt={4}>
+                    <Button
+                      colorScheme="purple"
+                      size="lg"
+                      width="full"
+                      onClick={() => handleLabClick(selectedLab)}
+                    >
+                      Start Lab
+                    </Button>
+                  </Box>
+                </VStack>
+              </MotionBox>
+            ) : (
+              <Box 
+                display="flex" 
+                justifyContent="center" 
+                alignItems="center" 
+                minH="300px"
+                color="brand.text.secondary"
+              >
+                Select a lab from the list to view details
+              </Box>
+            )}
+          </Box>
         </Grid>
       </Container>
     </Box>
   );
 };
 
-export default LabScorePage;
+export default LabSelectionPage;
