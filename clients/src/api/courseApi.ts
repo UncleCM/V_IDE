@@ -2,11 +2,12 @@ import axios from 'axios';
 import { logger } from '../utils/logger';
 
 const API_URL = import.meta.env.VITE_API_URL;
-
+const AUTH_TOKEN = import.meta.env.VITE_AUTH_TOKEN;
 const API = axios.create({
   baseURL: API_URL,
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json', 
+    'Authorization': `Token ${AUTH_TOKEN}`,
   },
 });
 
@@ -65,10 +66,10 @@ export const getCoursesByYear = async (year: string): Promise<Course[]> => {
   }
 };
 
-export const getLabsByCourseId = async (courseId: string): Promise<Lab[]> => {
+export const getLabsByCourseId = async (subjectId: string): Promise<Lab[]> => {
   logger.apiCall('getLabsByCourseId');
   try {
-    const response = await API.get<Lab[]>(`/api/coding/labtest/${courseId}`);
+    const response = await API.get<Lab[]>(`/api/coding/labtest/${subjectId}`);
     return logger.apiSuccess('getLabsByCourseId', response.data);
   } catch (error) {
     const errorMessage = logger.apiError('getLabsByCourseId', error);

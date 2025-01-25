@@ -43,13 +43,11 @@ const LabSelectionPage = () => {
         });
         return;
       }
-
+  
       try {
         setIsLoading(true);
-        const [courseData, labsData] = await Promise.all([
-          getCourseById(courseId),
-          getLabsByCourseId(courseId)
-        ]);
+        const courseData = await getCourseById(courseId);
+        const labsData = await getLabsByCourseId(courseData.subject_id);
         
         setCourse(courseData);
         setLabs(labsData);
@@ -64,7 +62,7 @@ const LabSelectionPage = () => {
         setIsLoading(false);
       }
     };
-
+  
     loadData();
   }, [courseId, toast]);
 
