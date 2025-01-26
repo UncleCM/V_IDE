@@ -1,4 +1,11 @@
-export const logger = {
+interface Logger {
+  apiCall: (functionName: string) => void;
+  apiError: (functionName: string, error: unknown) => string;
+  apiSuccess: <T>(functionName: string, data: T) => T;
+  apiWarning: (functionName: string, message: string) => void;
+}
+
+export const logger: Logger = {
   apiCall: (functionName: string) => {
     console.log(`🌐 API Call Attempted: ${functionName}`);
     console.log({
@@ -28,5 +35,14 @@ export const logger = {
       data
     });
     return data;
+  },
+  apiWarning: (functionName: string, message: string) => {
+    console.warn(`⚠️ API Warning: ${functionName}`, {
+      timestamp: new Date().toISOString(),
+      status: 'warning',
+      endpoint: functionName,
+      message
+    });
   }
 };
+

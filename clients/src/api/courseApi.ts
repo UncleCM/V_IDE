@@ -70,12 +70,26 @@ export const getLabsByCourseId = async (subjectId: string): Promise<Lab[]> => {
   logger.apiCall('getLabsByCourseId');
   try {
     const response = await API.get<Lab[]>(`/api/coding/labtest/${subjectId}`);
+    if (!response.data) {
+      return [];
+    }
     return logger.apiSuccess('getLabsByCourseId', response.data);
-  } catch (error) {
+  } catch (error: unknown) {
+    if (
+      error instanceof Error && 
+      'response' in error && 
+      error.response && 
+      typeof error.response === 'object' && 
+      'status' in error.response && 
+      error.response.status === 404
+    ) {
+      logger.apiWarning('getLabsByCourseId', 'No labs found for this course');
+      return [];
+    }
     const errorMessage = logger.apiError('getLabsByCourseId', error);
     throw new Error(errorMessage);
   }
-};
+}
 
 export const getCourseById = async (courseId: string): Promise<Course> => {
   logger.apiCall('getCourseById');
@@ -88,6 +102,27 @@ export const getCourseById = async (courseId: string): Promise<Course> => {
     return logger.apiSuccess('getCourseById', course);
   } catch (error) {
     const errorMessage = logger.apiError('getCourseById', error);
+    throw new Error(errorMessage);
+  }
+};
+
+export interface LabScore {
+  lab_id: number;
+  lab_title: string;
+  score: number;
+  completed_date: string;
+  attempts: number;
+  max_score: number;
+  status: 'Passed' | 'Failed' | 'Not Attempted';
+}
+
+export const getLabScores = async (courseId: string): Promise<LabScore[]> => {
+  logger.apiCall('getLabScores');
+  try {
+    const response = await API.get<LabScore[]>(`/api/courses/${courseId}/lab-scores/`);
+    return logger.apiSuccess('getLabScores', response.data);
+  } catch (error) {
+    const errorMessage = logger.apiError('getLabScores', error);
     throw new Error(errorMessage);
   }
 };

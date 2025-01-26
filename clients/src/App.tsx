@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import CodingPage from './Pages/CodingPage';
-import QuestionCreatorPage from './Pages/QuestionCreator';
+import QuestionCreatorPage from './Pages/QuestionCreatorPage';
 import DashboardPage from './Pages/DashboardPage';
 import TeacherDashboardPage from './Pages/TeacherDashboardPage';
 import LabSelectionPage from './Pages/LabSelectionPage';

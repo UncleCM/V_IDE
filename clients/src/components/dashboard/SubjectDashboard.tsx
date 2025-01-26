@@ -4,7 +4,7 @@ import { keyframes } from '@emotion/react';
 import { GraduationCap, Globe, BookType, Cpu, Brain, ExternalLink, Beaker } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProfileHeader from './ProfileHeader';
-import { getCoursesByYear, type Course } from '../../api/courseApi';
+import { getCoursesByYear, getLabsByCourseId, type Course } from '../../api/courseApi';
 
 // Define keyframes for animations
 const fadeIn = keyframes`
@@ -49,6 +49,8 @@ interface YearSectionProps {
 
 const YearSection: React.FC<YearSectionProps> = ({ courses, isLoading }) => {
   const navigate = useNavigate();
+  const toast = useToast();
+  const [loadingLabId, setLoadingLabId] = useState<number | null>(null);
   const [hoveredCourse, setHoveredCourse] = useState<number | null>(null);
 
   if (isLoading) {
@@ -73,9 +75,33 @@ const YearSection: React.FC<YearSectionProps> = ({ courses, isLoading }) => {
     );
   }
 
-const handleLabSelect = (courseId: number) => {
-  navigate(`/LabSelection/${courseId}`);
-};
+  const handleLabSelect = async (courseId: number) => {
+    setLoadingLabId(courseId);
+    try {
+      const labs = await getLabsByCourseId(courseId.toString());
+      if (labs.length === 0) {
+        toast({
+          title: "No Labs Available",
+          description: "No labs have been assigned for this course yet",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+      navigate(`/LabSelection/${courseId}`);
+    } catch (error) {
+      toast({
+        title: "Error Loading Labs",
+        description: "Failed to load lab information",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoadingLabId(null);
+    }
+  };
 
 
   const handleLabScores = (courseId: number) => {

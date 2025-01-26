@@ -1,4 +1,4 @@
-export type SupportedLanguage = 'python' | 'javascript' | 'typescript' | 'rust' | 'cpp';
+export type SupportedLanguage = 'Python' | 'Javascript' | 'Typescript' | 'Rust' | 'Cpp';
 
 export interface Question {
   id: number;
@@ -6,7 +6,20 @@ export interface Question {
   description: string;
   example: string;
   defaultCode: string;
+  name: string;
+  number: string;
   language: SupportedLanguage;
+  duration: {
+    hours: string;
+    minutes: string;
+  };
+  tags: string[];
+  tutorial: string;
+  question: string;
+  fullCodeTest: string;
+  score: string;
+  testCases: TestCase[];
+  testData: TestData[];
 }
 
 export interface QuestionStatus {
@@ -20,4 +33,16 @@ export interface QuestionWithStatus extends Question {
 
 export interface QuestionListProps {
   onSelectQuestion: (question: Question) => void;
+}
+
+export interface TestCase {
+  id: number;
+  description: string;
+  score: number;
+}
+
+export interface TestData {
+  id: number;
+  description: string;
+  score: number;
 }
