@@ -133,6 +133,11 @@ const TeacherDashboard = () => {
     }
   };
 
+const handleCreateAssignment = () => {
+  console.log('Create Assignment');
+  
+}
+
   return (
     <VStack spacing={6} align="stretch">
       <ProfileHeader 
@@ -143,7 +148,7 @@ const TeacherDashboard = () => {
 
       <HStack spacing={4}>
         <Button leftIcon={<UserPlus size={18} />} colorScheme="purple">Add Student</Button>
-        <Button leftIcon={<FileText size={18} />} variant="outline">Create Assignment</Button>
+        <Button leftIcon={<FileText size={18} />} variant="outline" onClick={handleCreateAssignment}>Create Assignment</Button>
       </HStack>
 
       <StatGroup gap={4}>

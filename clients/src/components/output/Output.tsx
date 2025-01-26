@@ -56,33 +56,67 @@ const Output = ({ editorRef, language, questionId, onError }: OutputProps) => {
     }
   };
 
-  const handleSave = async () => {
+  // const handleSave = async () => {
+  //   if (!editorRef.current) return;
+  //   const code = editorRef.current.getValue();
+  //   try {
+  //     setIsSaving(true);
+  //     const response = await saveCode({
+  //       code,
+  //       language,
+  //       question_id: questionId,
+  //       output: output?.join("\n") || null,
+  //       score
+  //     });
+  //     setCurrentExecutionId(response.id);
+  //     toast({
+  //       title: "Code saved successfully",
+  //       status: "success",
+  //       duration: 3000,
+  //     });
+  //   } catch (error) {
+  //     toast({
+  //       title: "Failed to save code",
+  //       status: "error",
+  //       duration: 3000,
+  //     });
+  //   } finally {
+  //     setIsSaving(false);
+  //   }
+  // };
+
+  const handleSave = () => {
     if (!editorRef.current) return;
-    const code = editorRef.current.getValue();
-    try {
-      setIsSaving(true);
-      const response = await saveCode({
-        code,
-        language,
-        question_id: questionId,
-        output: output?.join("\n") || null,
-        score
-      });
-      setCurrentExecutionId(response.id);
-      toast({
-        title: "Code saved successfully",
-        status: "success",
-        duration: 3000,
-      });
-    } catch (error) {
-      toast({
-        title: "Failed to save code",
-        status: "error",
-        duration: 3000,
-      });
-    } finally {
-      setIsSaving(false);
-    }
+    const sourceCode = editorRef.current.getValue();
+    
+    // Format output content
+    const outputText = `Language: ${language}
+Question ID: ${questionId}
+Code:
+${sourceCode}
+
+Output:
+${output?.join('\n') || ''}
+Saved at: ${new Date().toISOString()}`;
+
+    // Create and trigger download
+    const blob = new Blob([outputText], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `code-output-${questionId}-${Date.now()}.txt`;
+    
+    // Trigger download and cleanup
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    toast({
+      title: "Output saved",
+      status: "success",
+      duration: 2000,
+    });
   };
 
   const handleSaveAs = async () => {
