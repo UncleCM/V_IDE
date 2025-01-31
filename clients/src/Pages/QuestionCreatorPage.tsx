@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import { Box, Container, Flex, useToast } from '@chakra-ui/react';
-import { Question, TestCase, TestData } from '../types/questions';
+import { Question, TestCase, TestData, SupportedLanguage } from '../types/questions';
 import Header from '../components/Layout/Header';
 import QuestionSidebar from '../components/sidebar/QuestionSidebar';
 import QuestionForm from '../components/question/QuestionForm';
 
-// Mock service for saving/updating questions
 const questionService = {
   saveQuestion: async (question: Question) => {
-    // Simulate API call
     console.log('Saving question:', question);
-    return { ...question, id: Date.now() }; // Return question with new ID
+    return { ...question, id: Date.now() };
   },
   updateQuestion: async (question: Question) => {
-    // Simulate API call
     console.log('Updating question:', question);
     return question;
   }
@@ -24,20 +21,26 @@ const QuestionCreatorPage = () => {
   const [question, setQuestion] = useState<Question>({
     id: 0,
     title: '',
-    name: '',
-    number: '',
-    language: 'Python',
-    duration: { hours: '0', minutes: '30' },
-    tags: [],
-    tutorial: '',
-    question: '',
     description: '',
     example: '',
     defaultCode: '',
+    name: '',
+    number: '2',
+    language: 'Python',
+    duration: { hours: '0', minutes: '30' },
+    tags: ['For Loop'],
+    tutorial: 'Tutorial for teaching programming concepts for each lab class.',
+    question: '',
     fullCodeTest: '',
     score: '1',
-    testCases: [],
-    testData: []
+    testCases: [
+      { id: 1, description: 'Test case 1', score: 1 },
+      { id: 2, description: 'Test case 2', score: 1 }
+    ],
+    testData: [
+      { id: 1, description: 'Test data set 1', score: 1 },
+      { id: 2, description: 'Test data set 2', score: 1 }
+    ]
   });
 
   const handleQuestionChange = (field: keyof Question, value: any) => {
@@ -57,13 +60,73 @@ const QuestionCreatorPage = () => {
     }));
   };
 
+  const handleTestCaseChange = (index: number, field: keyof TestCase, value: any) => {
+    setQuestion(prev => ({
+      ...prev,
+      testCases: prev.testCases.map((testCase, i) =>
+        i === index ? { ...testCase, [field]: value } : testCase
+      )
+    }));
+  };
+
+  const handleTestDataChange = (index: number, field: keyof TestData, value: any) => {
+    setQuestion(prev => ({
+      ...prev,
+      testData: prev.testData.map((testData, i) =>
+        i === index ? { ...testData, [field]: value } : testData
+      )
+    }));
+  };
+
+  const handleAddTestCase = () => {
+    setQuestion(prev => ({
+      ...prev,
+      testCases: [
+        ...prev.testCases,
+        {
+          id: Date.now(),
+          description: `Test case ${prev.testCases.length + 1}`,
+          score: 1
+        }
+      ]
+    }));
+  };
+
+  const handleAddTestData = () => {
+    setQuestion(prev => ({
+      ...prev,
+      testData: [
+        ...prev.testData,
+        {
+          id: Date.now(),
+          description: `Test data set ${prev.testData.length + 1}`,
+          score: 1
+        }
+      ]
+    }));
+  };
+
+  const handleRemoveTestCase = (index: number) => {
+    setQuestion(prev => ({
+      ...prev,
+      testCases: prev.testCases.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleRemoveTestData = (index: number) => {
+    setQuestion(prev => ({
+      ...prev,
+      testData: prev.testData.filter((_, i) => i !== index)
+    }));
+  };
+
   const handleSaveQuestion = async (questionToSave: Question) => {
     try {
       const savedQuestion = await questionService.saveQuestion(questionToSave);
       setQuestion(savedQuestion);
       toast({
         title: "Question Saved",
-        description: "The question was successfully created.",
+        description: "The question was successfully saved.",
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -111,24 +174,19 @@ const QuestionCreatorPage = () => {
             question={question}
             onQuestionChange={handleQuestionChange}
             onDurationChange={handleDurationChange}
+            onTestCaseChange={handleTestCaseChange}
+            onTestDataChange={handleTestDataChange}
+            onAddTestCase={handleAddTestCase}
+            onAddTestData={handleAddTestData}
+            onRemoveTestCase={handleRemoveTestCase}
+            onRemoveTestData={handleRemoveTestData}
             onSave={handleSaveQuestion}
-            onUpdate={handleUpdateQuestion} onTestCaseChange={function (index: number, field: keyof TestCase, value: any): void {
-              throw new Error('Function not implemented.');
-            } } onTestDataChange={function (index: number, field: keyof TestData, value: any): void {
-              throw new Error('Function not implemented.');
-            } } onAddTestCase={function (): void {
-              throw new Error('Function not implemented.');
-            } } onAddTestData={function (): void {
-              throw new Error('Function not implemented.');
-            } } onRemoveTestCase={function (index: number): void {
-              throw new Error('Function not implemented.');
-            } } onRemoveTestData={function (index: number): void {
-              throw new Error('Function not implemented.');
-            } }          />
+            onUpdate={handleUpdateQuestion}
+          />
         </Flex>
       </Container>
     </Box>
   );
-}
+};
 
 export default QuestionCreatorPage;
