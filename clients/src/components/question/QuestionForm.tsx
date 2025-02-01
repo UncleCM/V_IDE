@@ -6,7 +6,6 @@ import {
   FormLabel,
   Input,
   Select,
-  Textarea,
   Button,
   SimpleGrid,
   NumberInput,
@@ -23,6 +22,7 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { Plus, X } from 'lucide-react';
+import { Editor } from '@tinymce/tinymce-react';
 import { Question, TestCase, TestData, SupportedLanguage } from '../../types/questions';
 
 interface QuestionFormProps {
@@ -129,49 +129,116 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
         <FormControl>
           <FormLabel>Tutorial</FormLabel>
-          <Textarea
+          <Editor
+            apiKey="your-api-key-here"
             value={question.tutorial}
-            onChange={(e) => onQuestionChange('tutorial', e.target.value)}
-            placeholder="Tutorial for teaching programming concepts for each lab class."
-            minH="100px"
+            onEditorChange={(content) => onQuestionChange('tutorial', content)}
+            init={{
+              height: 200,
+              menubar: false,
+              plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+              ],
+              toolbar: 'undo redo | blocks | ' +
+                'bold italic forecolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help',
+              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+            }}
           />
         </FormControl>
 
         <FormControl>
           <FormLabel>Description</FormLabel>
-          <Textarea
+          <Editor
+            apiKey="your-api-key-here"
             value={question.description}
-            onChange={(e) => onQuestionChange('description', e.target.value)}
-            minH="150px"
+            onEditorChange={(content) => onQuestionChange('description', content)}
+            init={{
+              height: 250,
+              menubar: false,
+              plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+              ],
+              toolbar: 'undo redo | blocks | ' +
+                'bold italic forecolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help',
+              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+            }}
           />
         </FormControl>
 
         <FormControl>
           <FormLabel>Example</FormLabel>
-          <Textarea
+          <Editor
+            apiKey="your-api-key-here"
             value={question.example}
-            onChange={(e) => onQuestionChange('example', e.target.value)}
-            minH="100px"
+            onEditorChange={(content) => onQuestionChange('example', content)}
+            init={{
+              height: 200,
+              menubar: false,
+              plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+              ],
+              toolbar: 'undo redo | blocks | ' +
+                'bold italic forecolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help',
+              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+            }}
           />
         </FormControl>
 
         <FormControl>
           <FormLabel>Default Code</FormLabel>
-          <Textarea
+          <Editor
+            apiKey="your-api-key-here"
             value={question.defaultCode}
-            onChange={(e) => onQuestionChange('defaultCode', e.target.value)}
-            minH="150px"
-            fontFamily="mono"
+            onEditorChange={(content) => onQuestionChange('defaultCode', content)}
+            init={{
+              height: 250,
+              menubar: false,
+              plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+              ],
+              toolbar: 'undo redo | blocks | ' +
+                'bold italic forecolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help',
+              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+            }}
           />
         </FormControl>
 
         <FormControl>
           <FormLabel>Full Code Test</FormLabel>
-          <Textarea
+          <Editor
+            apiKey="your-api-key-here"
             value={question.fullCodeTest}
-            onChange={(e) => onQuestionChange('fullCodeTest', e.target.value)}
-            minH="150px"
-            fontFamily="mono"
+            onEditorChange={(content) => onQuestionChange('fullCodeTest', content)}
+            init={{
+              height: 250,
+              menubar: false,
+              plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+              ],
+              toolbar: 'undo redo | blocks | ' +
+                'bold italic forecolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help',
+              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+            }}
           />
         </FormControl>
 

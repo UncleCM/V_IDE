@@ -6,7 +6,6 @@ import {
   FormLabel,
   Input,
   Select,
-  Textarea,
   Button,
   SimpleGrid,
   NumberInput,
@@ -17,6 +16,7 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { X } from 'lucide-react';
+import { Editor } from '@tinymce/tinymce-react';
 import { Lab, SupportedLanguage, ProgrammingConcept } from '../../types/lab';
 
 interface LabFormProps {
@@ -151,11 +151,24 @@ const LabForm: React.FC<LabFormProps> = ({
 
         <FormControl>
           <FormLabel>Tutorial</FormLabel>
-          <Textarea
+          <Editor
+            apiKey="your-api-key-here"
             value={lab.tutorial}
-            onChange={(e) => onLabChange('tutorial', e.target.value)}
-            placeholder="Tutorial for teaching programming concepts for each lab class."
-            minH="200px"
+            onEditorChange={(content) => onLabChange('tutorial', content)}
+            init={{
+              height: 300,
+              menubar: false,
+              plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+              ],
+              toolbar: 'undo redo | blocks | ' +
+                'bold italic forecolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help',
+              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+            }}
           />
         </FormControl>
 

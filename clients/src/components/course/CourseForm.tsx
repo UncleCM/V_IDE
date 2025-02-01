@@ -6,7 +6,6 @@ import {
   FormLabel,
   Input,
   Select,
-  Textarea,
   Button,
   SimpleGrid,
   HStack,
@@ -14,9 +13,9 @@ import {
   IconButton,
   Flex,
   InputGroup,
-  InputRightElement,
 } from '@chakra-ui/react';
 import { X, Upload } from 'lucide-react';
+import { Editor } from '@tinymce/tinymce-react';
 import { Course, SupportedLanguage } from '../../types/courses';
 
 interface CourseFormProps {
@@ -206,11 +205,24 @@ const CourseForm: React.FC<CourseFormProps> = ({
 
         <FormControl>
           <FormLabel>Course Description</FormLabel>
-          <Textarea
+          <Editor
+            apiKey="your-api-key-here"
             value={course.description}
-            onChange={(e) => onCourseChange('description', e.target.value)}
-            placeholder="Tutorial for teaching programming concepts for each lab class."
-            minH="150px"
+            onEditorChange={(content) => onCourseChange('description', content)}
+            init={{
+              height: 300,
+              menubar: false,
+              plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+              ],
+              toolbar: 'undo redo | blocks | ' +
+                'bold italic forecolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help',
+              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+            }}
           />
         </FormControl>
 
