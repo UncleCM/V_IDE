@@ -15,7 +15,8 @@ import {
   InputGroup,
 } from '@chakra-ui/react';
 import { X, Upload } from 'lucide-react';
-import { Editor } from '@tinymce/tinymce-react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { Course, SupportedLanguage } from '../../types/courses';
 
 interface CourseFormProps {
@@ -26,6 +27,23 @@ interface CourseFormProps {
   onLanguageRemove: (language: SupportedLanguage) => void;
   onSave: () => void;
 }
+
+const modules = {
+  toolbar: [
+    [{ 'header': [1, 2, false] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+    ['link', 'code-block'],
+    ['clean']
+  ],
+};
+
+const formats = [
+  'header',
+  'bold', 'italic', 'underline', 'strike', 'blockquote',
+  'list', 'bullet', 'indent',
+  'link', 'code-block'
+];
 
 const CourseForm: React.FC<CourseFormProps> = ({
   course,
@@ -205,25 +223,16 @@ const CourseForm: React.FC<CourseFormProps> = ({
 
         <FormControl>
           <FormLabel>Course Description</FormLabel>
-          <Editor
-            apiKey="your-api-key-here"
-            value={course.description}
-            onEditorChange={(content) => onCourseChange('description', content)}
-            init={{
-              height: 300,
-              menubar: false,
-              plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-              ],
-              toolbar: 'undo redo | blocks | ' +
-                'bold italic forecolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
-              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-            }}
-          />
+          <Box borderRadius="md" overflow="hidden" borderWidth="1px" borderColor="gray.200">
+            <ReactQuill
+              theme="snow"
+              value={course.description}
+              onChange={(content) => onCourseChange('description', content)}
+              modules={modules}
+              formats={formats}
+              style={{ height: '300px' }}
+            />
+          </Box>
         </FormControl>
 
         <Flex justify="flex-end">

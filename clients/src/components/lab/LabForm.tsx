@@ -16,7 +16,8 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { X } from 'lucide-react';
-import { Editor } from '@tinymce/tinymce-react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { Lab, SupportedLanguage, ProgrammingConcept } from '../../types/lab';
 
 interface LabFormProps {
@@ -39,6 +40,23 @@ const PROGRAMMING_CONCEPTS: ProgrammingConcept[] = [
   'Variable',
   'Conditional',
   'Loop'
+];
+
+const modules = {
+  toolbar: [
+    [{ 'header': [1, 2, false] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+    ['link', 'code-block'],
+    ['clean']
+  ],
+};
+
+const formats = [
+  'header',
+  'bold', 'italic', 'underline', 'strike', 'blockquote',
+  'list', 'bullet', 'indent',
+  'link', 'code-block'
 ];
 
 const LabForm: React.FC<LabFormProps> = ({
@@ -151,25 +169,16 @@ const LabForm: React.FC<LabFormProps> = ({
 
         <FormControl>
           <FormLabel>Tutorial</FormLabel>
-          <Editor
-            apiKey="your-api-key-here"
-            value={lab.tutorial}
-            onEditorChange={(content) => onLabChange('tutorial', content)}
-            init={{
-              height: 300,
-              menubar: false,
-              plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-              ],
-              toolbar: 'undo redo | blocks | ' +
-                'bold italic forecolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
-              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-            }}
-          />
+          <Box borderRadius="md" overflow="hidden" borderWidth="1px" borderColor="gray.200">
+            <ReactQuill
+              theme="snow"
+              value={lab.tutorial}
+              onChange={(content) => onLabChange('tutorial', content)}
+              modules={modules}
+              formats={formats}
+              style={{ height: '300px' }}
+            />
+          </Box>
         </FormControl>
 
         <Flex justify="flex-end">

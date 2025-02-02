@@ -22,7 +22,8 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { Plus, X } from 'lucide-react';
-import { Editor } from '@tinymce/tinymce-react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { Question, TestCase, TestData, SupportedLanguage } from '../../types/questions';
 
 interface QuestionFormProps {
@@ -38,6 +39,23 @@ interface QuestionFormProps {
   onSave: (question: Question) => void;
   onUpdate: (question: Question) => void;
 }
+
+const modules = {
+  toolbar: [
+    [{ 'header': [1, 2, false] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+    ['link', 'code-block'],
+    ['clean']
+  ],
+};
+
+const formats = [
+  'header',
+  'bold', 'italic', 'underline', 'strike', 'blockquote',
+  'list', 'bullet', 'indent',
+  'link', 'code-block'
+];
 
 const QuestionForm: React.FC<QuestionFormProps> = ({
   question,
@@ -129,117 +147,72 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
         <FormControl>
           <FormLabel>Tutorial</FormLabel>
-          <Editor
-            apiKey="your-api-key-here"
-            value={question.tutorial}
-            onEditorChange={(content) => onQuestionChange('tutorial', content)}
-            init={{
-              height: 200,
-              menubar: false,
-              plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-              ],
-              toolbar: 'undo redo | blocks | ' +
-                'bold italic forecolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
-              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-            }}
-          />
+          <Box borderRadius="md" overflow="hidden" borderWidth="1px" borderColor="gray.200">
+            <ReactQuill
+              theme="snow"
+              value={question.tutorial}
+              onChange={(content) => onQuestionChange('tutorial', content)}
+              modules={modules}
+              formats={formats}
+              style={{ height: '200px' }}
+            />
+          </Box>
         </FormControl>
 
         <FormControl>
           <FormLabel>Description</FormLabel>
-          <Editor
-            apiKey="your-api-key-here"
-            value={question.description}
-            onEditorChange={(content) => onQuestionChange('description', content)}
-            init={{
-              height: 250,
-              menubar: false,
-              plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-              ],
-              toolbar: 'undo redo | blocks | ' +
-                'bold italic forecolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
-              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-            }}
-          />
+          <Box borderRadius="md" overflow="hidden" borderWidth="1px" borderColor="gray.200">
+            <ReactQuill
+              theme="snow"
+              value={question.description}
+              onChange={(content) => onQuestionChange('description', content)}
+              modules={modules}
+              formats={formats}
+              style={{ height: '250px' }}
+            />
+          </Box>
         </FormControl>
 
         <FormControl>
           <FormLabel>Example</FormLabel>
-          <Editor
-            apiKey="your-api-key-here"
-            value={question.example}
-            onEditorChange={(content) => onQuestionChange('example', content)}
-            init={{
-              height: 200,
-              menubar: false,
-              plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-              ],
-              toolbar: 'undo redo | blocks | ' +
-                'bold italic forecolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
-              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-            }}
-          />
+          <Box borderRadius="md" overflow="hidden" borderWidth="1px" borderColor="gray.200">
+            <ReactQuill
+              theme="snow"
+              value={question.example}
+              onChange={(content) => onQuestionChange('example', content)}
+              modules={modules}
+              formats={formats}
+              style={{ height: '200px' }}
+            />
+          </Box>
         </FormControl>
 
         <FormControl>
           <FormLabel>Default Code</FormLabel>
-          <Editor
-            apiKey="your-api-key-here"
-            value={question.defaultCode}
-            onEditorChange={(content) => onQuestionChange('defaultCode', content)}
-            init={{
-              height: 250,
-              menubar: false,
-              plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-              ],
-              toolbar: 'undo redo | blocks | ' +
-                'bold italic forecolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
-              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-            }}
-          />
+          <Box borderRadius="md" overflow="hidden" borderWidth="1px" borderColor="gray.200">
+            <ReactQuill
+              theme="snow"
+              value={question.defaultCode}
+              onChange={(content) => onQuestionChange('defaultCode', content)}
+              modules={modules}
+              formats={formats}
+              style={{ height: '250px' }}
+            />
+          </Box>
         </FormControl>
 
         <FormControl>
           <FormLabel>Full Code Test</FormLabel>
-          <Editor
-            apiKey="your-api-key-here"
-            value={question.fullCodeTest}
-            onEditorChange={(content) => onQuestionChange('fullCodeTest', content)}
-            init={{
-              height: 250,
-              menubar: false,
-              plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-              ],
-              toolbar: 'undo redo | blocks | ' +
-                'bold italic forecolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
-              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-            }}
-          />
+          <Box borderRadius="md" overflow="hidden" borderWidth="1px" borderColor="gray.200">
+            <ReactQuill
+              theme="snow"
+              value={question.fullCodeTest}
+              onChange={(content) => onQuestionChange('fullCodeTest', content)}
+              modules={modules}
+              formats={formats}
+              style={{ height: '250px' }}
+            />
+          </Box>
         </FormControl>
 
         <FormControl>
