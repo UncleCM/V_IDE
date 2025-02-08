@@ -8,6 +8,7 @@ import LabSelectionPage from './Pages/LabSelectionPage';
 import LabScorePage from './Pages/LabScorePage';
 import CourseCreatorPage from './Pages/CourseCreatorPage';
 import LabCreatorPage from './Pages/LabCreatorPage';
+import TeacherLabScorePage from './Pages/TeacherLabScorePage';
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
         <Route path="/LabScore/" element={<LabScorePage />} />
         <Route path="/LabCreator" element={<LabCreatorPage />} />
         <Route path="/CourseCreator" element={<CourseCreatorPage />} />
+        <Route path="/TeacherLabScore" element={<TeacherLabScorePage />} />
 
       </Routes>
     </BrowserRouter>
