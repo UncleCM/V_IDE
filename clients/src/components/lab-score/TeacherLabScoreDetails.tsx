@@ -1,12 +1,24 @@
 import React from 'react';
-import { Box, Button, Table, Thead, Tbody, Tr, Th, Td, Text, HStack, Heading } from '@chakra-ui/react';
-import { ClipboardList } from 'lucide-react';
+import {
+  Box,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Button,
+  Heading,
+  VStack,
+  HStack,
+} from '@chakra-ui/react';
+import { FileSpreadsheet } from 'lucide-react';
 
 interface Student {
   no: number;
   id: string;
   name: string;
-  scores: {
+  labScores: {
     q1: number;
     q2: number;
     q3: number;
@@ -20,55 +32,73 @@ interface TeacherLabScoreDetailsProps {
   students: Student[];
 }
 
-const TeacherLabScoreDetails = ({ selectedLab, students }: TeacherLabScoreDetailsProps) => {
-  const getTotal = (scores: Student['scores']) => {
-    return Object.values(scores).reduce((sum, score) => sum + score, 0);
+const TeacherLabScoreDetails: React.FC<TeacherLabScoreDetailsProps> = ({
+  selectedLab,
+  students,
+}) => {
+  const calculateSum = (labScores: Student['labScores']): number => {
+    return Object.values(labScores).reduce((sum, score) => sum + score, 0);
   };
 
   return (
-    <Box bg="brand.bg.secondary" rounded="lg" shadow="sm" p={6}>
-      <HStack justify="space-between" mb={6}>
-        <HStack spacing={3}>
-          <ClipboardList className="h-6 w-6 text-indigo-600" />
-          <Heading as="h2" size="xl" color="brand.text.primary">{selectedLab}</Heading>
+    <Box bg="white" p={6} borderRadius="lg" shadow="sm">
+      <VStack align="stretch" spacing={6}>
+        <HStack justify="space-between">
+          <Heading size="lg" color="brand.text.primary">
+            {selectedLab}
+          </Heading>
+          <Button
+            leftIcon={<FileSpreadsheet size={20} />}
+            colorScheme="orange"
+            variant="outline"
+          >
+            Export to Excel File
+          </Button>
         </HStack>
-        <Button bg="brand.accent.primary" color="brand.text.inverse" _hover={{ bg: "brand.accent.secondary" }}>
-          Export Scores
-        </Button>
-      </HStack>
 
-      <Box overflowX="auto">
-        <Table variant="simple">
-          <Thead bg="brand.bg.hover">
-            <Tr>
-              <Th>No.</Th>
-              <Th>Student ID</Th>
-              <Th>Name</Th>
-              <Th>Q1</Th>
-              <Th>Q2</Th>
-              <Th>Q3</Th>
-              <Th>Q4</Th>
-              <Th>Q5</Th>
-              <Th>Total</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {students.map((student) => (
-              <Tr key={student.id} _hover={{ bg: "brand.bg.hover" }}>
-                <Td>{student.no}</Td>
-                <Td>{student.id}</Td>
-                <Td>{student.name}</Td>
-                <Td>{student.scores.q1}</Td>
-                <Td>{student.scores.q2}</Td>
-                <Td>{student.scores.q3}</Td>
-                <Td>{student.scores.q4}</Td>
-                <Td>{student.scores.q5}</Td>
-                <Td color="brand.accent.primary">{getTotal(student.scores)}</Td>
+        <Heading size="md" color="brand.text.primary">
+          Assessment of Python Lab#2
+        </Heading>
+
+        <Box overflowX="auto">
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>No</Th>
+                <Th>Student ID</Th>
+                <Th>Student Name</Th>
+                <Th>Q1</Th>
+                <Th>Q2</Th>
+                <Th>Q3</Th>
+                <Th>Q4</Th>
+                <Th>Q5</Th>
+                <Th>Sum</Th>
+                <Th>View</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </Box>
+            </Thead>
+            <Tbody>
+              {students.map((student) => (
+                <Tr key={student.id}>
+                  <Td>{student.no}</Td>
+                  <Td>{student.id}</Td>
+                  <Td>{student.name}</Td>
+                  <Td>{student.labScores.q1}</Td>
+                  <Td>{student.labScores.q2}</Td>
+                  <Td>{student.labScores.q3}</Td>
+                  <Td>{student.labScores.q4}</Td>
+                  <Td>{student.labScores.q5}</Td>
+                  <Td>{calculateSum(student.labScores)}</Td>
+                  <Td>
+                    <Button size="sm" colorScheme="green" variant="outline">
+                      Detail
+                    </Button>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </Box>
+      </VStack>
     </Box>
   );
 };

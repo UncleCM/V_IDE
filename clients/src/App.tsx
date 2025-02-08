@@ -9,6 +9,8 @@ import LabScorePage from './Pages/LabScorePage';
 import CourseCreatorPage from './Pages/CourseCreatorPage';
 import LabCreatorPage from './Pages/LabCreatorPage';
 import TeacherLabScorePage from './Pages/TeacherLabScorePage';
+import TeacherLabScoreSummaryPage from './Pages/TeacherLabScoreSummaryPage';
+import LabScorePageSummary from './Pages/LabScoreSummaryPage';
 
 const App: React.FC = () => {
   return (
@@ -21,9 +23,11 @@ const App: React.FC = () => {
         <Route path="/CodeEditor/:courseId/:labId" element={<CodingPage />} />
         <Route path="/QuestionCreator" element={<QuestionCreatorPage />} />
         <Route path="/LabScore/" element={<LabScorePage />} />
+        <Route path="/LabScoreSummary/" element={<LabScorePageSummary />} />
         <Route path="/LabCreator" element={<LabCreatorPage />} />
         <Route path="/CourseCreator" element={<CourseCreatorPage />} />
         <Route path="/TeacherLabScore" element={<TeacherLabScorePage />} />
+        <Route path="/TeacherLabScoreSummary" element={<TeacherLabScoreSummaryPage />} />
 
       </Routes>
     </BrowserRouter>
